@@ -1,3 +1,5 @@
 {
-    "test": "hello world"
+    "database_user": "",
+    "database_password": "",
+    "database_name": "S"
 }
