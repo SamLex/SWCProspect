@@ -45,6 +45,6 @@ class Planet
     
     public function setSize($newSize)
     {
-        $this->size = $;
+        $this->size = $newSize;
     }
 }
