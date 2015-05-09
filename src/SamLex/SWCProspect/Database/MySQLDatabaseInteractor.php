@@ -19,4 +19,20 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
     {
         $this->mysql_con->close();
     }
+
+    public function getPlanets()
+    {
+    }
+
+    public function getResults($planet)
+    {
+    }
+
+    public function savePlanet($planet)
+    {
+    }
+
+    public function saveResult($result)
+    {
+    }
 }
