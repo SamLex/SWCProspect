@@ -23,4 +23,59 @@ class Result
         $this->locationY = $locY;
         $this->dbID = $id;
     }
+
+    public function save()
+    {
+        $source->saveResult($this);
+    }
+
+    public function getDBID()
+    {
+        return $this->dbID;
+    }
+
+    public function getPlanetID()
+    {
+        return $this->planetID;
+    }
+
+    public function getMaterial()
+    {
+        return $this->material;
+    }
+
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    public function getLocationX()
+    {
+        return $this->locationX;
+    }
+
+    public function getLocationY()
+    {
+        return $this->locationY;
+    }
+
+    public function setMaterial($newMat)
+    {
+        $this->material = $newMat;
+    }
+
+    public function setSize($newSize)
+    {
+        $this->size = $newSize;
+    }
+
+    public function setLocationX($newLocX)
+    {
+        $this->locationX = $newLocX;
+    }
+
+    public function setLocationY($newLocY)
+    {
+        $this->locationY = $newLocY;
+    }
 }
