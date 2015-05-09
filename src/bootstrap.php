@@ -2,10 +2,18 @@
 
 /*
 * Bootstraps the environment
-* Defines runtime constants, loads the config file and sets up the class autoloading
+*
+* Sets up the environment in several ways:
+* - Enables error reporting
+* - Defines useful runtime constants, mainly file paths
+* - Loads, and makes available, the config file
+* - Sets up class autoloading
 *
 * Class autoloading heavily influenced by example given in PSR-4
 */
+
+// Enable reporting of all errors (Testing purposes only)
+error_reporting(E_ALL);
 
 // Define useful runtime constants
 define('MAIN_DIR', dirname(__DIR__));
