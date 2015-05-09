@@ -4,15 +4,11 @@
 * The main page for SWCProspect
 */
 
-// Bootstrap
+// Bootstrap environment
 require_once dirname(__DIR__).'/src/bootstrap.php';
 
-use SamLex\SWCProspect\Test;
+use SamLex\SWCProspect\Page\MainPage;
 
-$test = new Test();
+$page = new MainPage();
 
-$test::printMsg('Hello world from test');
-echo "\n";
-
-echo $CONFIG['test'];
-echo "\n";
+$page->outputPage('Main Page');
