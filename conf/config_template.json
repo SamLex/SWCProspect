@@ -1,5 +1,6 @@
 {
+    "database_address": "",
     "database_user": "",
     "database_password": "",
-    "database_name": "S"
+    "database_name": ""
 }
