@@ -6,15 +6,15 @@ abstract class Page
 {
     public function startPage()
     {
-        print '
+        printf('
         <!DOCTYPE html>
         <html>
-        ';
+        ');
     }
 
     public function startHead($title)
     {
-        print "
+        printf("
         <head>
             <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no'>
             <link rel='stylesheet' href='//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css'>
@@ -26,36 +26,36 @@ abstract class Page
                     white-space: normal !important;
                 }
             </style>
-            <title>$title</title>
-        ";
+            <title>%s</title>
+        ", $title);
     }
 
     public function endHead()
     {
-        print '
+        printf('
         </head>
-        ';
+        ');
     }
 
     public function startBody()
     {
-        print '
+        printf('
         <body>
-        ';
+        ');
     }
 
     public function endBody()
     {
-        print '
+        printf('
         </body>
-        ';
+        ');
     }
 
     public function endPage()
     {
-        print '
+        printf('
         </html>
-        ';
+        ');
     }
 
     public function outputPage($title)
