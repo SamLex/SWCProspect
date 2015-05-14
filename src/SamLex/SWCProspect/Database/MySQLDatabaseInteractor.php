@@ -7,6 +7,11 @@ use SamLex\SWCProspect\DepositType;
 use SamLex\SWCProspect\Planet;
 use SamLex\SWCProspect\PlanetType;
 
+/*
+    Implements the DatabaseInteractor interface using MySQL
+
+    See the interface for details on methods
+*/
 class MySQLDatabaseInteractor implements DatabaseInteractor
 {
     private $mysql_con;

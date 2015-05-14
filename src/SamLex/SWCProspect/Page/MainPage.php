@@ -4,6 +4,9 @@ namespace SamLex\SWCProspect\Page;
 
 use SamLex\SWCProspect\Planet;
 
+/*
+    The main landing page
+*/
 class MainPage extends Page
 {
     private $dbInteractor;
@@ -11,24 +14,6 @@ class MainPage extends Page
     public function __construct($dbInteractor)
     {
         $this->dbInteractor = $dbInteractor;
-    }
-
-    public function startHead($title)
-    {
-        parent::startHead($title);
-
-        printf('
-            <style>
-                .planet-tile
-                {
-                    float:left;
-                    max-width:15em;
-                    width: 15em;
-                    margin:1em;
-                    text-align: center;
-                }
-            </style>
-        ');
     }
 
     public function startBody($title = 'Welcome to SWCProspect')
@@ -63,6 +48,9 @@ class MainPage extends Page
         parent::endBody();
     }
 
+    /*
+        Outputs the planet tiles, one for each planet record
+    */
     private function planetTiles()
     {
         $planets = $this->dbInteractor->getPlanets();
@@ -77,7 +65,7 @@ class MainPage extends Page
 
             printf("
             <a href='viewplanet.php?planetid=%d'>
-                <div class='ui-corner-all planet-tile'>
+                <div class='ui-corner-all main-page-planet-tile'>
                     <div class='ui-bar ui-bar-b'>
                         <h3>%s</h3>
                     </div>
@@ -94,11 +82,14 @@ class MainPage extends Page
         }
     }
 
+    /*
+        Outputs the new planet tile
+    */
     private function newPlanetTile()
     {
         printf("
         <a href='addplanet.php'>
-            <div class='ui-corner-all planet-tile'>
+            <div class='ui-corner-all main-page-planet-tile'>
                 <div class='ui-bar ui-bar-b'>
                     <h3></h3>
                 </div>

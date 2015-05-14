@@ -2,6 +2,9 @@
 
 namespace SamLex\SWCProspect\Page;
 
+/*
+    The view planet page
+*/
 class ViewPlanetPage extends Page
 {
     private $dbInteractor;

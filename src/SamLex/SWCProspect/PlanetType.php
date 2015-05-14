@@ -2,6 +2,9 @@
 
 namespace SamLex\SWCProspect;
 
+/*
+    Data class that holds data on a planet type
+*/
 class PlanetType
 {
     private $dbID;
