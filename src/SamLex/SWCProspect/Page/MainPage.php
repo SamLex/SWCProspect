@@ -76,7 +76,7 @@ class MainPage extends Page
             $showSize = 5 + (($planet->getSize() - 1) * (40 / 19));
 
             printf("
-            <a href='#'>
+            <a href='viewplanet.php?planetid=%d'>
                 <div class='ui-corner-all planet-tile'>
                     <div class='ui-bar ui-bar-b'>
                         <h3>%s</h3>
@@ -90,14 +90,14 @@ class MainPage extends Page
                     </div>
                 </div>
             </a>
-            ", $planet->getName(), $showSize, $planet->getType()->getHTMLColour(), $this->dbInteractor->getNumDeposits($planet->getDBID()));
+            ", $planet->getDBID(), $planet->getName(), $showSize, $planet->getType()->getHTMLColour(), $this->dbInteractor->getNumDeposits($planet->getDBID()));
         }
     }
 
     private function newPlanetTile()
     {
         printf("
-        <a href='#'>
+        <a href='addplanet.php'>
             <div class='ui-corner-all planet-tile'>
                 <div class='ui-bar ui-bar-b'>
                     <h3></h3>
