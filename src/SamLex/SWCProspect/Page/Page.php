@@ -20,6 +20,12 @@ abstract class Page
             <link rel='stylesheet' href='//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css'>
             <script src='//code.jquery.com/jquery-2.1.3.min.js'></script>
             <script src='//code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js'></script>
+            <style>
+                .ui-title
+                {
+                    white-space: normal !important;
+                }
+            </style>
             <title>$title</title>
         ";
     }

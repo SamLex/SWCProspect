@@ -8,7 +8,10 @@
 require_once dirname(__DIR__).'/src/bootstrap.php';
 
 use SamLex\SWCProspect\Page\MainPage;
+use SamLex\SWCProspect\Database\MySQLDatabaseInteractor as MySQL;
 
-$page = new MainPage();
+$db = new MySQL($CONFIG['database_address'], $CONFIG['database_user'], $CONFIG['database_password'], $CONFIG['database_name']);
+
+$page = new MainPage($db);
 
 $page->outputPage('Main Page');
