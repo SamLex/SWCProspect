@@ -4,8 +4,19 @@ namespace SamLex\SWCProspect\Database;
 
 interface DatabaseInteractor
 {
+    public function isAvailable();
+
+    public function getDepositType($id);
+    public function getPlanetType($id);
+    public function getDeposit($id);
+    public function getPlanet($id);
     public function getPlanets();
-    public function getResults($planet);
+    public function getDeposits($planetID);
+    public function getNumDeposits($planetID);
+
     public function savePlanet($planet);
-    public function saveResult($result);
+    public function saveDeposit($deposit);
+
+    public function deletePlanet($planet);
+    public function deleteDeposit($deposit);
 }
