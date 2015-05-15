@@ -21,14 +21,12 @@ $validSize = filter_var($cleanSize, FILTER_VALIDATE_INT);
 $cleanType = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_NUMBER_INT);
 $validType = filter_var($cleanType, FILTER_VALIDATE_INT);
 
-if($validName && $validSize && $validType)
-{
+if ($validName && $validSize && $validType) {
     $type = $db->getPlanetType($validType);
-    
-    if($type)
-    {
+
+    if ($type) {
         $planet = new Planet($validName, $validSize, $type, $db);
-        $planet->save();        
+        $planet->save();
     }
 }
 

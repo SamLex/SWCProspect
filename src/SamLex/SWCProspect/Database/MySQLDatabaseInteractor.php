@@ -460,7 +460,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
             $planetNameBindable = $planet->getName();
             $planetSizeBindable = $planet->getSize();
             $planetTypeIDBindable = $planet->getType()->getDBID();
-            
+
             if (!$sqlStmt->bind_param('sii', $planetNameBindable, $planetSizeBindable, $planetTypeIDBindable)) {
                 $sqlStmt->close();
 
@@ -471,7 +471,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
             $planetSizeBindable = $planet->getSize();
             $planetTypeIDBindable = $planet->getType()->getDBID();
             $planetIDBindable = $planet->getDBID();
-            
+
             if (!$sqlStmt->bind_param('siii', $planetNameBindable, $planetSizeBindable, $planetTypeIDBindable, $planetIDBindable)) {
                 $sqlStmt->close();
 
@@ -512,7 +512,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
             $depositLocYBindable = $deposit->getLocationY();
             $depositPlanetIDBindable = $deposit->getPlanet()->getDBID();
             $depositTypeIDBindable = $deposit->getType()->getDBID();
-            
+
             if (!$sqlStmt->bind_param('iiiii', $depositSizeBindable, $depositLocXBindable, $depositLocYBindable, $depositPlanetIDBindable, $depositTypeIDBindable)) {
                 $sqlStmt->close();
 
@@ -525,7 +525,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
             $depositPlanetIDBindable = $deposit->getPlanet()->getDBID();
             $depositTypeIDBindable = $deposit->getType()->getDBID();
             $depositIDBindable = $deposit->getDBID();
-            
+
             if (!$sqlStmt->bind_param('iiiiii', $depositSizeBindable, $depositLocXBindable, $depositLocYBindable, $depositPlanetIDBindable, $depositTypeIDBindable, $depositIDBindable)) {
                 $sqlStmt->close();
 
@@ -560,7 +560,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
         if (!$sqlStmt) {
             return false;
         }
-        
+
         $planetIDBindable = $planet->getDBID();
         if (!$sqlStmt->bind_param('i', $planetIDBindable)) {
             $sqlStmt->close();
