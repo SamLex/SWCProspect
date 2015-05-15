@@ -263,9 +263,9 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
 
         $sqlStmt->close();
 
-        return $depositTypes;   
+        return $depositTypes;
     }
-    
+
     public function getPlanetTypes()
     {
         $sqlStmt = $this->mysql_con->prepare('SELECT ID, Description, HTMLColour FROM PlanetType;');
@@ -302,7 +302,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
 
         return $planetTypes;
     }
-    
+
     public function getPlanets()
     {
         $sqlStmt = $this->mysql_con->prepare('SELECT ID, Name, Size, PlanetTypeID FROM Planet;');
@@ -457,13 +457,22 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
         }
 
         if ($planet->getDBID() < 0) {
-            if (!$sqlStmt->bind_param('sii', $planet->getName(), $planet->getSize(), $planet->getType()->getDBID())) {
+            $planetNameBindable = $planet->getName();
+            $planetSizeBindable = $planet->getSize();
+            $planetTypeIDBindable = $planet->getType()->getDBID();
+            
+            if (!$sqlStmt->bind_param('sii', $planetNameBindable, $planetSizeBindable, $planetTypeIDBindable)) {
                 $sqlStmt->close();
 
                 return false;
             }
         } else {
-            if (!$sqlStmt->bind_param('siii', $planet->getName(), $planet->getSize(), $planet->getType()->getDBID(), $planet->getDBID())) {
+            $planetNameBindable = $planet->getName();
+            $planetSizeBindable = $planet->getSize();
+            $planetTypeIDBindable = $planet->getType()->getDBID();
+            $planetIDBindable = $planet->getDBID();
+            
+            if (!$sqlStmt->bind_param('siii', $planetNameBindable, $planetSizeBindable, $planetTypeIDBindable, $planetIDBindable)) {
                 $sqlStmt->close();
 
                 return false;
@@ -498,13 +507,26 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
         }
 
         if ($deposit->getDBID() < 0) {
-            if (!$sqlStmt->bind_param('iiiii', $deposit->getSize(), $deposit->getLocationX(), $deposit->getLocationY(), $deposit->getPlanet()->getDBID(), $deposit->getType()->getDB())) {
+            $depositSizeBindable = $deposit->getSize();
+            $depositLocXBindable = $deposit->getLocationX();
+            $depositLocYBindable = $deposit->getLocationY();
+            $depositPlanetIDBindable = $deposit->getPlanet()->getDBID();
+            $depositTypeIDBindable = $deposit->getType()->getDBID();
+            
+            if (!$sqlStmt->bind_param('iiiii', $depositSizeBindable, $depositLocXBindable, $depositLocYBindable, $depositPlanetIDBindable, $depositTypeIDBindable)) {
                 $sqlStmt->close();
 
                 return false;
             }
         } else {
-            if (!$sqlStmt->bind_param('iiiiii', $deposit->getSize(), $deposit->getLocationX(), $deposit->getLocationY(), $deposit->getPlanet()->getDBID(), $deposit->getType()->getDBID(), $deposit->getDBID())) {
+            $depositSizeBindable = $deposit->getSize();
+            $depositLocXBindable = $deposit->getLocationX();
+            $depositLocYBindable = $deposit->getLocationY();
+            $depositPlanetIDBindable = $deposit->getPlanet()->getDBID();
+            $depositTypeIDBindable = $deposit->getType()->getDBID();
+            $depositIDBindable = $deposit->getDBID();
+            
+            if (!$sqlStmt->bind_param('iiiiii', $depositSizeBindable, $depositLocXBindable, $depositLocYBindable, $depositPlanetIDBindable, $depositTypeIDBindable, $depositIDBindable)) {
                 $sqlStmt->close();
 
                 return false;
@@ -538,8 +560,9 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
         if (!$sqlStmt) {
             return false;
         }
-
-        if (!$sqlStmt->bind_param('i', $planet->getDBID())) {
+        
+        $planetIDBindable = $planet->getDBID();
+        if (!$sqlStmt->bind_param('i', $planetIDBindable)) {
             $sqlStmt->close();
 
             return false;
@@ -568,7 +591,8 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
             return false;
         }
 
-        if (!$sqlStmt->bind_param('i', $deposit->getDBID())) {
+        $depositIDBindable = $deposit->getDBID();
+        if (!$sqlStmt->bind_param('i', $depositIDBindable)) {
             $sqlStmt->close();
 
             return false;

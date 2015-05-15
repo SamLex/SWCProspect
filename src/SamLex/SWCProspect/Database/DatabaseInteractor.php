@@ -30,11 +30,11 @@ interface DatabaseInteractor
     // Get all available deposit types and return as array of DepositType objects
     // Return false on error
     public function getDepositTypes();
-    
+
     // Get all available planet types and return as array of PlanetType objects
     // Return false on error
     public function getPlanetTypes();
-    
+
     // Get all available planet data and return as array of Planet objects
     // Return false on error
     public function getPlanets();
