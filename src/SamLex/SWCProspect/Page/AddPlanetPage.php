@@ -25,64 +25,56 @@ class AddPlanetPage extends Page
                 <h1>Add New Planet</h1>
             </div>
             <div data-role='content'>
-                <form method='post' action='addplanetworker.php'>
+                <form method='post' action='addplanetworker.php' data-ajax='false'>
                     <label for='add-planet-name'>Name</label>
                     <input type='text' name='name' maxlength='254' id='add-planet-name'>
                     <label for='add-planet-size' class='select'>Size</label>
                     <select name='size' id='add-planet-size'>
         ");
-        
-        for($i=1;$i<=30;$i++)
-        {
+
+        for ($i = 1;$i <= 30;$i++) {
             printf("
                         <option value='%d'>%dx%d</option>
             ", $i, $i, $i);
         }
-        
+
         printf("
                     </select>
                     <label for='add-planet-type' class='select'>Planet Type</label>
                     <select name='type' id='add-planet-type'>
         ");
-        
+
         $planetTypes = $this->dbInteractor->getPlanetTypes();
-        
-        if(!$planetTypes)
-        {
-            printf("
+
+        if (!$planetTypes) {
+            printf('
                     </select>
-            ");
-        }
-        else
-        {
-            foreach($planetTypes as $type)
-            {
+            ');
+        } else {
+            foreach ($planetTypes as $type) {
                 printf("
                         <option value='%d'>%s</option>
                 ", $type->getDBID(), $type->getDescription());
             }
-            
-            printf("
+
+            printf('
                     </select>
-            ");
+            ');
         }
-        
-        if(!$planetTypes)
-        {
+
+        if (!$planetTypes) {
             printf("
                 <button type='submit' disabled=''>Add Planet</button>
-            ");    
-        }
-        else
-        {
+            ");
+        } else {
             printf("
                 <button type='submit'>Add Planet</button>
             ");
         }
-        
-        printf("
+
+        printf('
                 </form>
-        ");
+        ');
     }
 
     public function endBody()
