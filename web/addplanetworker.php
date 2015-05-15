@@ -12,3 +12,8 @@ use SamLex\SWCProspect\Database\MySQLDatabaseInteractor as MySQL;
 
 // Connect to database
 $db = new MySQL($CONFIG['database_address'], $CONFIG['database_user'], $CONFIG['database_password'], $CONFIG['database_name']);
+
+// Redirect back to main page
+header('HTTP/1.1 301 Moved Permanently');
+header('Location: '.'index.php');
+exit();

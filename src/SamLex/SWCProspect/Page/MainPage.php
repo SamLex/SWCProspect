@@ -25,6 +25,7 @@ class MainPage extends Page
             <div data-role='header' data-position='inline'>
                     <h1>%s</h1>
             </div>
+            <div data-role='content'>
         ", $title);
 
         if (!$this->dbInteractor->isAvailable()) {
@@ -42,6 +43,7 @@ class MainPage extends Page
     public function endBody()
     {
         printf('
+            </div>
         </div>
         ');
 

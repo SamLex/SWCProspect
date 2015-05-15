@@ -26,12 +26,14 @@ class ViewPlanetPage extends Page
                 <a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>
                 <h1>%s</h1>
             </div>
+            <div data-role='content'>
         ", $this->planet->getName(), $this->planet->getName());
     }
 
     public function endBody()
     {
         printf('
+            </div>
         </div>
         ');
 
