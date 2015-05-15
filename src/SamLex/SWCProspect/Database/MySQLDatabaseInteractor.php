@@ -372,17 +372,141 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
 
     public function savePlanet($planet)
     {
+        if ($planet->getDBID() < 0) {
+            $sqlStmt = $this->mysql_con->prepare('INSERT INTO Planet (Name, Size, PlanetTypeID) VALUES (?,?,?);');
+        } else {
+            $sqlStmt = $this->mysql_con->prepare('UPDATE Planet SET Name=?, Size=?, PlanetTypeID=? WHERE ID=?;');
+        }
+
+        if (!$sqlStmt) {
+            return false;
+        }
+
+        if ($planet->getDBID() < 0) {
+            if (!$sqlStmt->bind_param('sii', $planet->getName(), $planet->getSize(), $planet->getType()->getDBID())) {
+                $sqlStmt->close();
+
+                return false;
+            }
+        } else {
+            if (!$sqlStmt->bind_param('siii', $planet->getName(), $planet->getSize(), $planet->getType()->getDBID(), $planet->getDBID())) {
+                $sqlStmt->close();
+
+                return false;
+            }
+        }
+
+        if (!$sqlStmt->execute()) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        if ($planet->getDBID() < 0) {
+            $planet = new Planet($planet->getName(), $planet->getSize(), $planet->getType(), $this, $sqlStmt->insert_id);
+        }
+
+        $sqlStmt->close();
+
+        return $planet;
     }
 
     public function saveDeposit($deposit)
     {
+        if ($deposit->getDBID() < 0) {
+            $sqlStmt = $this->mysql_con->prepare('INSERT INTO Deposit (Size, LocationX, LocationY, PlanetID, DepositTypeID) VALUES (?,?,?,?,?);');
+        } else {
+            $sqlStmt = $this->mysql_con->prepare('UPDATE Deposit SET Size=?, LocationX=?, LocationY=?, PlanetID=?, DepositTypeID=? WHERE ID=?;');
+        }
+
+        if (!$sqlStmt) {
+            return false;
+        }
+
+        if ($deposit->getDBID() < 0) {
+            if (!$sqlStmt->bind_param('iiiii', $deposit->getSize(), $deposit->getLocationX(), $deposit->getLocationY(), $deposit->getPlanet()->getDBID(), $deposit->getType()->getDB())) {
+                $sqlStmt->close();
+
+                return false;
+            }
+        } else {
+            if (!$sqlStmt->bind_param('iiiiii', $deposit->getSize(), $deposit->getLocationX(), $deposit->getLocationY(), $deposit->getPlanet()->getDBID(), $deposit->getType()->getDBID(), $deposit->getDBID())) {
+                $sqlStmt->close();
+
+                return false;
+            }
+        }
+
+        if (!$sqlStmt->execute()) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        if ($deposit->getDBID() < 0) {
+            $deposit = new Deposit($deposit->getSize(), $deposit->getLocationX(), $deposit->getLocationY(), $deposit->getPlanet(), $deposit->getType(), $sqlStmt->insert_id);
+        }
+
+        $sqlStmt->close();
+
+        return $deposit;
     }
 
     public function deletePlanet($planet)
     {
+        if ($planet->getDBID() < 0) {
+            return false;
+        }
+
+        $sqlStmt = $this->mysql_con->prepare('DELETE FROM Planet WHERE ID=?');
+
+        if (!$sqlStmt) {
+            return false;
+        }
+
+        if (!$sqlStmt->bind_param('i', $planet->getDBID())) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        if (!$sqlStmt->execute()) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        $sqlStmt->close();
+
+        return new Planet($planet->getName(), $planet->getSize(), $planet->getType(), $this, -1);
     }
 
     public function deleteDeposit($deposit)
     {
+        if ($deposit->getDBID() < 0) {
+            return false;
+        }
+
+        $sqlStmt = $this->mysql_con->prepare('DELETE FROM Deposit WHERE ID=?');
+
+        if (!$sqlStmt) {
+            return false;
+        }
+
+        if (!$sqlStmt->bind_param('i', $deposit->getDBID())) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        if (!$sqlStmt->execute()) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        $sqlStmt->close();
+
+        return new Deposit($deposit->getSize(), $deposit->getLocationX(), $deposit->getLocationY(), $deposit->getPlanet(), $deposit->getType(), -1);
     }
 }

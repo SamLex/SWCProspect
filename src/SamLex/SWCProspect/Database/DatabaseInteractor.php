@@ -41,15 +41,21 @@ interface DatabaseInteractor
 
     // Save the given Planet object
     // A negative id within the object indicates a new record should be created
+    // Returns the given object or, if a new record is created, a new object reflecting the change
+    // Returns false on error
     public function savePlanet($planet);
 
     // Save the given Deposit object
     // A negative id within the object indicates a new record should be created
+    // Returns the given object or, if a new record is created, a new object reflecting the change
+    // Returns false on error
     public function saveDeposit($deposit);
 
     // Delete the given Planet object
+    // Returns a new object with a negative unique id, or false on error
     public function deletePlanet($planet);
 
     // Delete the given Deposit object
+    // Returns a new object with a negative unique id, or false on error
     public function deleteDeposit($deposit);
 }

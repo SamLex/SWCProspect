@@ -26,12 +26,12 @@ class Planet
 
     public function save()
     {
-        $db->savePlanet($this);
+        return $db->savePlanet($this);
     }
 
     public function delete()
     {
-        $db->deletePlanet($this);
+        return $db->deletePlanet($this);
     }
 
     public function getDBID()

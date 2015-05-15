@@ -30,12 +30,12 @@ class Deposit
 
     public function save()
     {
-        $db->saveDeposit($this);
+        return $db->saveDeposit($this);
     }
 
     public function delete()
     {
-        $db->deleteDeposit($this);
+        return $db->deleteDeposit($this);
     }
 
     public function getDBID()
