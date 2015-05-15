@@ -34,8 +34,8 @@ class AddPlanetPage extends Page
 
         for ($i = 1;$i <= 30;$i++) {
             printf("
-                        <option value='%d'>%dx%d</option>
-            ", $i, $i, $i);
+                        <option value='%1\$d'>%1\$dx%1\$d</option>
+            ", $i);
         }
 
         printf("
