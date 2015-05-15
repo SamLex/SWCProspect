@@ -45,8 +45,24 @@ abstract class Page
                     float:left;
                     max-width:15em;
                     width: 15em;
-                    margin:1em;
+                    margin: 1em;
                     text-align: center;
+                }
+
+                .view-planet-page-deposit-grid-container
+                {
+                    width: 20em;
+                    height: 20em;
+                    margin-left: auto;
+                    margin-right: auto;
+                    margin-top: 2em;
+                    margin-bottom: 2em;
+                }
+
+                .view-planet-page-deposit-grid
+                {
+                    width: 100%%;
+                    height: 100%%;
                 }
             </style>
             <title>%s</title>
