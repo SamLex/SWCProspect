@@ -80,7 +80,12 @@ class MainPage extends Page
                     </div>
                 </div>
             </a>
-            ", $planet->getDBID(), $planet->getName(), $showSize, $planet->getType()->getHTMLColour(), $this->dbInteractor->getNumDeposits($planet->getDBID()));
+            ",
+            $planet->getDBID(),
+            $planet->getName(),
+            $showSize,
+            $planet->getType()->getHTMLColour(),
+            $this->dbInteractor->getNumDeposits($planet->getDBID()));
         }
     }
 

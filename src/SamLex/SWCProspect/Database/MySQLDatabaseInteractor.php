@@ -365,13 +365,13 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
 
             return false;
         }
-        
+
         if (!$sqlStmt->execute()) {
             $sqlStmt->close();
 
             return false;
         }
-        
+
         if (!$sqlStmt->store_result()) {
             $sqlStmt->close();
 
