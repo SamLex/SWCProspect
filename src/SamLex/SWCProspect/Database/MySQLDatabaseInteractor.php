@@ -229,6 +229,80 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
         return new Planet($name, $size, $type, $this, $planetID);
     }
 
+    public function getDepositTypes()
+    {
+        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Material, HTMLColour FROM DepositType;');
+
+        if (!$sqlStmt) {
+            return false;
+        }
+
+        if (!$sqlStmt->execute()) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        if (!$sqlStmt->store_result()) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        if (!$sqlStmt->bind_result($depositTypeID, $mat, $colour)) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        $depositTypes = array();
+
+        while ($sqlStmt->fetch()) {
+            $depositTypes[] = new DepositType($depositTypeID, $mat, $colour);
+        }
+
+        $sqlStmt->close();
+
+        return $depositTypes;   
+    }
+    
+    public function getPlanetTypes()
+    {
+        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Description, HTMLColour FROM PlanetType;');
+
+        if (!$sqlStmt) {
+            return false;
+        }
+
+        if (!$sqlStmt->execute()) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        if (!$sqlStmt->store_result()) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        if (!$sqlStmt->bind_result($planetTypeID, $des, $colour)) {
+            $sqlStmt->close();
+
+            return false;
+        }
+
+        $planetTypes = array();
+
+        while ($sqlStmt->fetch()) {
+            $planetTypes[] = new PlanetType($planetTypeID, $des, $colour);
+        }
+
+        $sqlStmt->close();
+
+        return $planetTypes;
+    }
+    
     public function getPlanets()
     {
         $sqlStmt = $this->mysql_con->prepare('SELECT ID, Name, Size, PlanetTypeID FROM Planet;');
@@ -452,6 +526,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
         return $deposit;
     }
 
+    // Deletion of deposits is handled by forgein key constraints
     public function deletePlanet($planet)
     {
         if ($planet->getDBID() < 0) {

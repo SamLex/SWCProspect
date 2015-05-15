@@ -27,6 +27,14 @@ interface DatabaseInteractor
     // Return false on error
     public function getPlanet($id);
 
+    // Get all available deposit types and return as array of DepositType objects
+    // Return false on error
+    public function getDepositTypes();
+    
+    // Get all available planet types and return as array of PlanetType objects
+    // Return false on error
+    public function getPlanetTypes();
+    
     // Get all available planet data and return as array of Planet objects
     // Return false on error
     public function getPlanets();
@@ -53,6 +61,7 @@ interface DatabaseInteractor
 
     // Delete the given Planet object
     // Returns a new object with a negative unique id, or false on error
+    // Deletion of a planet should result in the deletion of associated deposits
     public function deletePlanet($planet);
 
     // Delete the given Deposit object
