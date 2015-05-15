@@ -365,14 +365,14 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
 
             return false;
         }
-
-        if (!$sqlStmt->store_result()) {
+        
+        if (!$sqlStmt->execute()) {
             $sqlStmt->close();
 
             return false;
         }
-
-        if (!$sqlStmt->execute()) {
+        
+        if (!$sqlStmt->store_result()) {
             $sqlStmt->close();
 
             return false;
@@ -424,7 +424,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
         if (!$sqlStmt->store_result()) {
             $sqlStmt->close();
 
-            return false;
+            return 0;
         }
 
         if (!$sqlStmt->bind_result($numDeposits)) {
