@@ -13,7 +13,8 @@
 */
 
 // Enable reporting of all errors (Testing purposes only)
-error_reporting(E_ALL);
+error_reporting(-1);
+ini_set('display_errors', 'On');
 
 // Define useful runtime constants
 define('MAIN_DIR', dirname(__DIR__));
