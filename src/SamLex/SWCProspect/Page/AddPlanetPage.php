@@ -22,25 +22,23 @@ class AddPlanetPage extends Page
         <button type='submit'>Add Planet</button
     </form>
     ";
-    
+
     public function __construct($db)
     {
         $dbError = !$db->isAvailable();
-        
-        if($dbError === false)
-        {
+
+        if ($dbError === false) {
             $planetTypes = $db->getPlanetTypes();
-            
-            if($planetTypes === false)
-            {
+
+            if ($planetTypes === false) {
                 $dbError = true;
             }
         }
-        
+
         $this->setJQPageID('swcprospect-add-planet-page');
         $this->setTitle('Add New Planet');
         $this->addToJQHeaderBeforeTitle("<a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>");
-        
+
         if ($dbError === true) {
             $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
         } else {
@@ -51,34 +49,32 @@ class AddPlanetPage extends Page
     private function addPlanetForm($types)
     {
         $form = $this->addPlanetFormTemplate;
-        
+
         $form = str_replace('%%SIZE_OPTIONS%%', $this->genSizeOptions(1, 20), $form);
         $form = str_replace('%%TYPE_OPTIONS%%', $this->genTypeOptions($types), $form);
-        
+
         return $form;
     }
 
     private function genSizeOptions($min, $max)
     {
         $options = '';
-        
-        for($size = $min;$size <= $max;$size++)
-        {
-            $options = $options . "<option value='$size'>{$size}x{$size}</option>";
+
+        for ($size = $min;$size <= $max;$size++) {
+            $options = $options."<option value='$size'>{$size}x{$size}</option>";
         }
-        
+
         return $options;
     }
 
     private function genTypeOptions($types)
     {
         $options = '';
-        
-        foreach($types as $type)
-        {
-            $options = $options . sprintf("<option value='%d'>%s</option>", $type->getDBID(), $type->getDescription());
+
+        foreach ($types as $type) {
+            $options = $options.sprintf("<option value='%d'>%s</option>", $type->getDBID(), $type->getDescription());
         }
-        
+
         return $options;
     }
 }
