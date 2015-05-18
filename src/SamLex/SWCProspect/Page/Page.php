@@ -13,15 +13,15 @@ namespace SamLex\SWCProspect\Page;
 abstract class Page
 {
     // Variables to get replaced into the template
-    private $title = "";
-    private $head = "";
-    private $jqPageID = "";
-    private $jqHeaderBeforeTitle = "";
-    private $jqHeaderAfterTitle = "";
-    private $jqContent = "";
-    private $jqAfterContent = "";
-    private $body = "";
-    
+    private $title = '';
+    private $head = '';
+    private $jqPageID = '';
+    private $jqHeaderBeforeTitle = '';
+    private $jqHeaderAfterTitle = '';
+    private $jqContent = '';
+    private $jqAfterContent = '';
+    private $body = '';
+
     // The base page template
     private $pageTemplate = "
     <!DOCTYPE html>
@@ -52,63 +52,63 @@ abstract class Page
         </body>
     </html>
     ";
-    
+
     // Set the page title, used in the HTML title and header
     public function setTitle($title)
     {
         $this->title = $title;
     }
-    
+
     // Set the JQuery Mobile page id. Each page MUST have a unique ID
     public function setJQPageID($id)
     {
         $this->jqPageID = $id;
     }
-    
+
     // Add elmements to the pages head
     public function addToHead($addition)
     {
-        $this->head = $this->head . $addition;
+        $this->head = $this->head.$addition;
     }
-    
+
     // Add elmements to the pages header before the header title
     // Mainly to add left buttons
     public function addToJQHeaderBeforeTitle($addition)
     {
-        $this->jqHeaderBeforeTitle = $this->jqHeaderBeforeTitle . $addition;
+        $this->jqHeaderBeforeTitle = $this->jqHeaderBeforeTitle.$addition;
     }
-    
+
     // Add elmements to the pages header after the header title
     // Mainly to add right buttons
     public function addToJQHeaderAfterTitle($addition)
     {
-        $this->jqHeaderAfterTitle = $this->jqHeaderAfterTitle . $addition;
+        $this->jqHeaderAfterTitle = $this->jqHeaderAfterTitle.$addition;
     }
-    
+
     // Add elmements to the pages content
     public function addToJQContent($addition)
     {
-        $this->jqContent = $this->jqContent . $addition;
+        $this->jqContent = $this->jqContent.$addition;
     }
-    
+
     // Add elmements after the pages content but still in the JQuery Mobile page
     // Mainly for adding popups
     public function addToJQAfterContent($addition)
     {
-        $this->jqAfterContent = $this->jqAfterContent . $addition;
+        $this->jqAfterContent = $this->jqAfterContent.$addition;
     }
-    
+
     // Add elmements to the pages body after the JQuery Mobile page
     public function addToBody($addition)
     {
-        $this->body = $this->body . $addition;
+        $this->body = $this->body.$addition;
     }
-    
+
     // Output the page by replacing all the placeholders in the template and echoing
     public function outputPage()
     {
         $page = $this->pageTemplate;
-        
+
         $page = str_replace('%%TITLE%%', $this->title, $page);
         $page = str_replace('%%MORE_HEAD%%', $this->head, $page);
         $page = str_replace('%%JQUERY_PAGE_ID%%', $this->jqPageID, $page);
@@ -117,7 +117,7 @@ abstract class Page
         $page = str_replace('%%JQUERY_CONTENT%%', $this->jqContent, $page);
         $page = str_replace('%%JQUERY_AFTER_CONTENT%%', $this->jqAfterContent, $page);
         $page = str_replace('%%MORE_BODY%%', $this->body, $page);
-        
+
         echo $page;
     }
 }

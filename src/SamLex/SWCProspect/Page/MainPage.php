@@ -25,7 +25,7 @@ class MainPage extends Page
         </div>
     </a>
     ";
-    
+
     private $newPlanetTileTemplate = "
     <a href='addplanet.php'>
         <div class='ui-corner-all main-page-planet-tile'>
@@ -44,83 +44,71 @@ class MainPage extends Page
         </div>
     </a>
     ";
-    
+
     public function __construct($db)
     {
         $dbError = !$db->isAvailable();
-        
-        if($dbError === false)
-        {
+
+        if ($dbError === false) {
             $planets = $db->getPlanets();
-            
-            if($planets === false)
-            {
+
+            if ($planets === false) {
                 $dbError = true;
-            }
-            else
-            {
+            } else {
                 $depositNums = array();
-                
-                foreach($planets as $planet)
-                {
+
+                foreach ($planets as $planet) {
                     $numDeposits = $db->getNumDeposits($planet->getDBID());
-                    
-                    if($numDeposits === false)
-                    {
+
+                    if ($numDeposits === false) {
                         $dbError = true;
                         break;
-                    }
-                    else
-                    {
+                    } else {
                         $depositNums[$planet->getName()] = $numDeposits;
                     }
-                }    
+                }
             }
         }
-        
+
         $this->setJQPageID('swcprospect-main-page');
         $this->setTitle('Welcome to SWCProspect');
-        
-        if($dbError === true)
-        {
+
+        if ($dbError === true) {
             $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
-        }
-        else
-        {
-            foreach($planets as $planet)
-            {
+        } else {
+            foreach ($planets as $planet) {
                 $this->addToJQContent($this->planetTile($planet, $depositNums[$planet->getName()]));
             }
-            
+
             $this->addToJQContent($this->newPlanetTile());
         }
     }
 
     /*
-        Replaces to placeholders in planet tile template and returns the resulting string
+        Replaces placeholders in planet tile template and returns the resulting string
     */
     private function planetTile($planet, $numDeposits)
     {
         $showSize = 5 + (($planet->getSize() - 1) * (40 / 19));
 
         $tile = $this->planetTileTemplate;
-        
+
         $tile = str_replace('%%PLANET_ID%%', $planet->getDBID(), $tile);
         $tile = str_replace('%%PLANET_NAME%%', $planet->getName(), $tile);
         $tile = str_replace('%%PLANET_SHOW_SIZE%%', $showSize, $tile);
         $tile = str_replace('%%PLANET_COLOUR%%', $planet->getType()->getHTMLColour(), $tile);
         $tile = str_replace('%%PLANET_NUM_DEPOSITS%%', $numDeposits, $tile);
-        
+
         return $tile;
     }
 
      /*
-        Replaces to placeholders in new planet tile template and returns the resulting string
+        Replaces placeholders in new planet tile template and returns the resulting string
     */
     private function newPlanetTile()
     {
         $newTile = $this->newPlanetTileTemplate;
-        
+
         return $newTile;
     }
 }
