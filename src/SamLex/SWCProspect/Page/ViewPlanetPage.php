@@ -27,6 +27,26 @@ class ViewPlanetPage extends Page
             <div data-role='header' data-position='inline'>
                 <a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>
                 <h1>%1\$s</h1>
+                <a data-icon='gear' data-iconpos='notext' class='ui-btn-right' href='#%1\$sMenuPopup' data-rel='popup'></a>
+            </div>
+            <div data-role='popup' id='%1\$sMenuPopup'>
+                <ul data-role='listview' data-inset='true'>
+                    <li data-role='list-divider'>Planet Actions</li>
+                    <li><a href='adddeposit.php?planetid=%5\$d'>Add Deposit</a></li>
+                    <li><a href='editplanet.php?planetid=%5\$d'>Edit Planet</a></li>
+                    <li><a onclick='popupChain(\"#%1\$sMenuPopup\", \"#delete%1\$sPopup\");'>Delete Planet</a></li>
+                </ul>
+            </div>
+            <div data-role='popup' id='delete%1\$sPopup' data-overlay-theme='b'>
+                <div data-role='header'>
+                    <h1>Delete %1\$s?</h1>
+                </div>
+                <div data-role='content'>
+                    <h3 class='ui-title'>Are you sure you want to delete this planet?</h3>
+                    <p>This will also delete all deposits on this planet and cannot be undone!</p>
+                    <a data-rel='back' class='ui-btn ui-corner-all ui-btn-inline'>Cancel</a>
+                    <a href='deleteplanetworker.php?planetid=%5\$d' class='ui-btn ui-corner-all ui-btn-inline' data-ajax='false'>Confirm</a>
+                </div>
             </div>
             <div data-role='content'>
                 <div class='ui-grid-a ui-responsive'>
@@ -58,7 +78,8 @@ class ViewPlanetPage extends Page
         $this->planet->getName(),
         $this->planet->getSize(),
         $this->planet->getType()->getDescription(),
-        $this->dbInteractor->getNumDeposits($this->planet->getDBID()));
+        $this->dbInteractor->getNumDeposits($this->planet->getDBID()),
+        $this->planet->getDBID());
 
         $this->depositGrid();
 
@@ -127,12 +148,14 @@ class ViewPlanetPage extends Page
     {
         printf("
                     <div>
-                        <table data-role='table' data-mode='reflow' class='ui-body-b ui-shadow ui-responsive table-stroke'>
+                        <table data-role='table' data-mode='reflow' class='ui-body-b ui-shadow ui-responsive table-stripe'>
                             <thead>
                                 <tr class='ui-bar-b'>
                                     <th>Material</th>
                                     <th>Location</th>
                                     <th>Size</th>
+                                    <th style='width:4em;text-align:center;'>Edit?</th>
+                                    <th style='width:6em;text-align:center;'>Delete?</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -141,20 +164,24 @@ class ViewPlanetPage extends Page
         foreach ($this->deposits as $deposit) {
             printf("
                                 <tr>
-                                    <td>%1\$s</td>
-                                    <td>%2\$dx%3\$d</td>
-                                    <td>%4\$d</td>
+                                    <td style='vertical-align:middle'>%1\$s</td>
+                                    <td style='vertical-align:middle'>%2\$dx%3\$d</td>
+                                    <td style='vertical-align:middle'>%4\$d</td>
+                                    <td><a href='editdeposit.php?depositid=%5\$d' class='ui-btn ui-mini ui-corner-all'>Edit</a></td>
+                                    <td><a href='#deleteDeposit%5\$dPopup' class='ui-btn ui-mini ui-corner-all' data-rel='popup'>Delete</a></td>
                                 </tr>
             ",
             $deposit->getType()->getMaterial(),
             $deposit->getLocationX(),
             $deposit->getLocationY(),
-            $deposit->getSize());
+            $deposit->getSize(),
+            $deposit->getDBID());
         }
 
         printf('
                             </tbody>
                         </table>
+                    </div>
         ');
     }
 }
