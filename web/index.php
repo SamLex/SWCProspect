@@ -16,4 +16,4 @@ $db = new MySQL($CONFIG['database_address'], $CONFIG['database_user'], $CONFIG['
 
 // Create page and output
 $page = new MainPage($db);
-$page->outputPage('Main Page');
+$page->outputPage();
