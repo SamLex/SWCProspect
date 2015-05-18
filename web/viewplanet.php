@@ -21,9 +21,9 @@ $validPlanetID = filter_var($cleanPlanetID, FILTER_VALIDATE_INT);
 if ($validPlanetID) {
     $planetID = $validPlanetID;
 } else {
-    $planetID = 1;
+    $planetID = -1;
 }
 
 // Create and output page
 $page = new ViewPlanetPage($db, $planetID);
-$page->outputPage('View Planet');
+$page->outputPage();
