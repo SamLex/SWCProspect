@@ -7,83 +7,78 @@ namespace SamLex\SWCProspect\Page;
 */
 class AddPlanetPage extends Page
 {
-    private $dbInteractor;
-
-    public function __construct($dbInteractor)
+    private $addPlanetFormTemplate = "
+    <form method='post' action='addplanetworker.php' data-ajax='false'>
+        <label for='swcprospect-add-planet-page-name'>Name</label>
+        <input type='text' name='name' maxlength='254' id='swcprospect-add-planet-page-name'>
+        <label for='swcprospect-add-planet-page-size' class='select'>Size</label>
+        <select name='size' id='swcprospect-add-planet-page-size'>
+            %%SIZE_OPTIONS%%
+        </select>
+        <label for='swcprospect-add-planet-page-type' class='select'>Planet Type</label>
+        <select name='type' id='swcprospect-add-planet-page-type'>
+            %%TYPE_OPTIONS%%
+        </select>
+        <button type='submit'>Add Planet</button
+    </form>
+    ";
+    
+    public function __construct($db)
     {
-        $this->dbInteractor = $dbInteractor;
-    }
-
-    public function startBody()
-    {
-        parent::startBody();
-
-        printf("
-        <div data-role='page' data-theme='b' id='add-planet'>
-            <div data-role='header' data-position='inline'>
-                <a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>
-                <h1>Add New Planet</h1>
-            </div>
-            <div data-role='content'>
-                <form method='post' action='addplanetworker.php' data-ajax='false'>
-                    <label for='add-planet-name'>Name</label>
-                    <input type='text' name='name' maxlength='254' id='add-planet-name'>
-                    <label for='add-planet-size' class='select'>Size</label>
-                    <select name='size' id='add-planet-size'>
-        ");
-
-        for ($i = 1;$i <= 30;$i++) {
-            printf("
-                        <option value='%1\$d'>%1\$dx%1\$d</option>
-            ", $i);
-        }
-
-        printf("
-                    </select>
-                    <label for='add-planet-type' class='select'>Planet Type</label>
-                    <select name='type' id='add-planet-type'>
-        ");
-
-        $planetTypes = $this->dbInteractor->getPlanetTypes();
-
-        if (!$planetTypes) {
-            printf('
-                    </select>
-            ');
-        } else {
-            foreach ($planetTypes as $type) {
-                printf("
-                        <option value='%d'>%s</option>
-                ", $type->getDBID(), $type->getDescription());
+        $dbError = !$db->isAvailable();
+        
+        if($dbError === false)
+        {
+            $planetTypes = $db->getPlanetTypes();
+            
+            if($planetTypes === false)
+            {
+                $dbError = true;
             }
-
-            printf('
-                    </select>
-            ');
         }
-
-        if (!$planetTypes) {
-            printf("
-                <button type='submit' disabled=''>Add Planet</button>
-            ");
+        
+        $this->setJQPageID('swcprospect-add-planet-page');
+        $this->setTitle('Add New Planet');
+        $this->addToJQHeaderBeforeTitle("<a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>");
+        
+        if ($dbError === true) {
+            $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
         } else {
-            printf("
-                <button type='submit'>Add Planet</button>
-            ");
+            $this->addToJQContent($this->addPlanetForm($planetTypes));
         }
-
-        printf('
-                </form>
-        ');
     }
 
-    public function endBody()
+    private function addPlanetForm($types)
     {
-        printf('
-            </div>
-        </div>
-        ');
+        $form = $this->addPlanetFormTemplate;
+        
+        $form = str_replace('%%SIZE_OPTIONS%%', $this->genSizeOptions(1, 20), $form);
+        $form = str_replace('%%TYPE_OPTIONS%%', $this->genTypeOptions($types), $form);
+        
+        return $form;
+    }
 
-        parent::endBody();
+    private function genSizeOptions($min, $max)
+    {
+        $options = '';
+        
+        for($size = $min;$size <= $max;$size++)
+        {
+            $options = $options . "<option value='$size'>{$size}x{$size}</option>";
+        }
+        
+        return $options;
+    }
+
+    private function genTypeOptions($types)
+    {
+        $options = '';
+        
+        foreach($types as $type)
+        {
+            $options = $options . sprintf("<option value='%d'>%s</option>", $type->getDBID(), $type->getDescription());
+        }
+        
+        return $options;
     }
 }

@@ -16,4 +16,4 @@ $db = new MySQL($CONFIG['database_address'], $CONFIG['database_user'], $CONFIG['
 
 // Create page and output
 $page = new AddPlanetPage($db);
-$page->outputPage('Add Planet');
+$page->outputPage();
