@@ -27,7 +27,7 @@ define('PROJECT_NAMESPACE', 'SamLex\\SWCProspect');
 $config = [];
 
 // Check config file exists
-if (file_exists(CONF_DIR.'/config.json')) {
+if (file_exists(CONF_DIR.'/config.json') === true) {
     // Load file
     $config_file_content = file_get_contents(CONF_DIR.'/config.json');
 
@@ -35,7 +35,7 @@ if (file_exists(CONF_DIR.'/config.json')) {
     $decoded = json_decode($config_file_content, true);
 
     // Check that JSON was valid
-    if (!is_null($decoded)) {
+    if (is_null($decoded) === false) {
         $config = $decoded;
     }
 }
@@ -57,7 +57,7 @@ spl_autoload_register(function ($class_name) {
     $class_file = SRC_DIR.'/'.str_replace('\\', '/', $class_name).'.php';
 
     // Check that file actually exists
-    if (file_exists($class_file)) {
+    if (file_exists($class_file) === true) {
         // File exists, load it
         require_once $class_file;
     }
