@@ -5,7 +5,7 @@
 */
 
 // Bootstrap environment
-require_once dirname(__DIR__).'/src/bootstrap.php';
+require_once dirname(dirname(__DIR__)).'/src/bootstrap.php';
 
 // Import nessesary classes
 use SamLex\SWCProspect\Database\MySQLDatabaseInteractor as MySQL;
@@ -34,5 +34,5 @@ if ($validName && $validSize && $validType && $validPlanetID) {
 
 // Redirect back to main page
 header('HTTP/1.1 301 Moved Permanently');
-header('Location: '.'index.php');
+header('Location: '.'../index.php');
 exit();
