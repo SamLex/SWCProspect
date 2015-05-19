@@ -25,7 +25,7 @@ class EditDepositPage extends Page
         <select name='locy' id='swcprospect-edit-deposit-page-%%DEPOSIT_ID%%-locy'>
             %%LOCY_OPTIONS%%
         </select>
-        <button type='submit'>Add Deposit</button
+        <button type='submit'>Update</button
     </form>
     ";
 
