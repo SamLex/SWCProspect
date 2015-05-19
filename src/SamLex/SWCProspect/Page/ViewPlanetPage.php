@@ -27,7 +27,7 @@ class ViewPlanetPage extends Page
             <h3 class='ui-title'>Are you sure you want to delete this planet?</h3>
             <p>This will also delete all deposits on this planet and cannot be undone!</p>
             <a data-rel='back' class='ui-btn ui-corner-all ui-btn-inline'>Cancel</a>
-            <a href='deleteplanetworker.php?planetid=%%PLANET_ID%%' class='ui-btn ui-corner-all ui-btn-inline' data-ajax='false'>Confirm</a>
+            <a href='worker/deleteplanetworker.php?planetid=%%PLANET_ID%%' class='ui-btn ui-corner-all ui-btn-inline' data-ajax='false'>Confirm</a>
         </div>
     </div>
     ";
@@ -41,7 +41,7 @@ class ViewPlanetPage extends Page
             <h3 class='ui-title'>Are you sure you want to delete this deposit?</h3>
             <p>This cannot be undone!</p>
             <a data-rel='back' class='ui-btn ui-corner-all ui-btn-inline'>Cancel</a>
-            <a href='deletedepositworker.php?depositid=%%DEPOSIT_ID%%' class='ui-btn ui-corner-all ui-btn-inline' data-ajax='false'>Confirm</a>
+            <a href='worker/deletedepositworker.php?depositid=%%DEPOSIT_ID%%' class='ui-btn ui-corner-all ui-btn-inline' data-ajax='false'>Confirm</a>
         </div>
     </div>
     ";

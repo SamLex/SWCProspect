@@ -8,7 +8,7 @@ namespace SamLex\SWCProspect\Page;
 class AddPlanetPage extends Page
 {
     private $addPlanetFormTemplate = "
-    <form method='post' action='addplanetworker.php' data-ajax='false'>
+    <form method='post' action='worker/addplanetworker.php' data-ajax='false'>
         <label for='swcprospect-add-planet-page-name'>Name</label>
         <input type='text' name='name' maxlength='254' id='swcprospect-add-planet-page-name'>
         <label for='swcprospect-add-planet-page-size' class='select'>Size</label>
