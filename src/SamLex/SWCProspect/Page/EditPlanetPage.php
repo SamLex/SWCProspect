@@ -49,7 +49,7 @@ class EditPlanetPage extends Page
             $this->setJQPageID('swcprospect-edit-planet-page-error');
             $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
         } else {
-            $this->setJQPageID(sprintf('swcprospect-edit-planet-page-%s%d', $planet->getName(), $planet->getDBID()));
+            $this->setJQPageID(sprintf('swcprospect-edit-planet-page-%s%d', str_replace(' ', '', $planet->getName()), $planet->getDBID()));
             $this->setTitle(sprintf('Edit %s', $planet->getName()));
             $this->addToJQContent($this->editPlanetForm($planetTypes, $planet));
         }
@@ -61,7 +61,7 @@ class EditPlanetPage extends Page
 
         $form = str_replace('%%PLANET_ID%%', $planet->getDBID(), $form);
         $form = str_replace('%%PLANET_NAME%%', $planet->getName(), $form);
-        $form = str_replace('%%PLANET_NAMEID%%', sprintf('%s%d', $planet->getName(), $planet->getDBID()), $form);
+        $form = str_replace('%%PLANET_NAMEID%%', sprintf('%s%d', str_replace(' ', '', $planet->getName()), $planet->getDBID()), $form);
         $form = str_replace('%%SIZE_OPTIONS%%', $this->genSizeOptions(1, 20, $planet->getSize()), $form);
         $form = str_replace('%%TYPE_OPTIONS%%', $this->genTypeOptions($types, $planet->getType()), $form);
 

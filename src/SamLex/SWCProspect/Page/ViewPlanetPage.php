@@ -136,9 +136,9 @@ class ViewPlanetPage extends Page
             $this->setTitle('Error');
             $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
         } else {
-            $this->setJQPageID(sprintf('swcprospect-view-planet-page-%s%d', $planet->getName(), $planet->getDBID()));
+            $this->setJQPageID(sprintf('swcprospect-view-planet-page-%s%d', str_replace(' ', '', $planet->getName()), $planet->getDBID()));
             $this->setTitle($planet->getName());
-            $this->addToJQHeaderAfterTitle(sprintf("<a data-icon='gear' data-iconpos='notext' class='ui-btn-right' href='#%s%dMenuPopup' data-rel='popup'></a>", $planet->getName(), $planet->getDBID()));
+            $this->addToJQHeaderAfterTitle(sprintf("<a data-icon='gear' data-iconpos='notext' class='ui-btn-right' href='#%s%dMenuPopup' data-rel='popup'></a>", str_replace(' ', '', $planet->getName()), $planet->getDBID()));
             $this->addToJQAfterContent($this->menuPopup($planet));
             $this->addToJQAfterContent($this->deletePopup($planet));
             $this->addToJQAfterContent($this->depositDeletePopups($deposits));
@@ -152,7 +152,7 @@ class ViewPlanetPage extends Page
     {
         $popup = $this->menuPopupTemplate;
 
-        $popup = str_replace('%%PLANET_NAMEID%%', sprintf('%s%d', $planet->getName(), $planet->getDBID()), $popup);
+        $popup = str_replace('%%PLANET_NAMEID%%', sprintf('%s%d', str_replace(' ', '', $planet->getName()), $planet->getDBID()), $popup);
         $popup = str_replace('%%PLANET_ID%%', $planet->getDBID(), $popup);
 
         return $popup;
@@ -162,7 +162,7 @@ class ViewPlanetPage extends Page
     {
         $popup = $this->deletePopupTemplate;
 
-        $popup = str_replace('%%PLANET_NAMEID%%', sprintf('%s%d', $planet->getName(), $planet->getDBID()), $popup);
+        $popup = str_replace('%%PLANET_NAMEID%%', sprintf('%s%d', str_replace(' ', '', $planet->getName()), $planet->getDBID()), $popup);
         $popup = str_replace('%%PLANET_ID%%', $planet->getDBID(), $popup);
         $popup = str_replace('%%PLANET_NAME%%', $planet->getName(), $popup);
 
