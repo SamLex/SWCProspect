@@ -46,7 +46,12 @@ class ViewPlanetPage extends Page
     </div>
     ";
 
-    private $depositTooltipPopupTemplate = '';
+    private $depositTooltipPopupTemplate = "
+    <div data-role='popup' id='%%DEPOSIT_ID%%(%%DEPOSIT_COORD%%)TooltipPopup' class='ui-content'>
+        <p>%%DEPOSIT_SIZE%% %%DEPOSIT_MAT%%</p>
+        <p>(%%DEPOSIT_COORD%%)</p>
+    </dv>
+    ";
 
     private $infoGridTemplate = "
     <div class='ui-grid-a ui-responsive'>
@@ -74,14 +79,25 @@ class ViewPlanetPage extends Page
             </ul>
         </div>
         <div class='ui-block-b'>
-            <div class='view-planet-page-deposit-grid-container'>
-                <svg class='view-planet-page-deposit-grid'>
+            <table class='view-planet-page-deposit-grid'>
+                <tbody>
                     %%DEPOSIT_BOXES%%
-                    %%GRID_LINES%%
-                </svg>
-            </div>
+                </tbody>
+            </table>
         </div>
     </div>
+    ";
+
+    private $depositGridFullCellTemplate = "
+    <td class='view-planet-page-deposit-grid-cell' style='background-color:%%DEPOSIT_COLOUR%%'>
+        <a href='#%%DEPOSIT_ID%%(%%DEPOSIT_COORD%%)TooltipPopup' style='display:block;width:100%;height:100%' title='(%%DEPOSIT_COORD%%)' data-rel='popup' data-transition='pop'>
+        </a>
+    </td>
+    ";
+
+    private $depositGridEmptyCellTemplate = "
+    <td class='view-planet-page-deposit-grid-cell'>
+    </td>
     ";
 
     private $depositTableTemplate = "
@@ -186,8 +202,20 @@ class ViewPlanetPage extends Page
 
     private function depositTooltipPopups($deposits)
     {
-        // TODO
-        return '';
+        $popups = '';
+
+        foreach ($deposits as $deposit) {
+            $popup = $this->depositTooltipPopupTemplate;
+
+            $popup = str_replace('%%DEPOSIT_ID%%', $deposit->getDBID(), $popup);
+            $popup = str_replace('%%DEPOSIT_COORD%%', $deposit->getLocationX().','.$deposit->getLocationY(), $popup);
+            $popup = str_replace('%%DEPOSIT_SIZE%%', $deposit->getSize(), $popup);
+            $popup = str_replace('%%DEPOSIT_MAT%%', $deposit->getType()->getMaterial(), $popup);
+
+            $popups = $popups.$popup;
+        }
+
+        return $popups;
     }
 
     private function infoGrid($planet, $deposits)
@@ -199,38 +227,45 @@ class ViewPlanetPage extends Page
         $info = str_replace('%%PLANET_TYPE%%', $planet->getType()->getDescription(), $info);
         $info = str_replace('%%PLANET_NUM_DEPOSITS%%', count($deposits), $info);
 
-        $boxSizePercent = 100 / $planet->getSize();
-        $boxes = '';
-
-        foreach ($deposits as $deposit) {
-            $box = sprintf("<rect x='%f%%' y='%f%%' width='%f%%' height='%f%%' fill='%s' />",
-            $deposit->getLocationX() * $boxSizePercent,
-            $deposit->getLocationY() * $boxSizePercent,
-            $boxSizePercent,
-            $boxSizePercent,
-            $deposit->getType()->getHTMLColour());
-
-            $boxes = $boxes.$box;
-        }
-
-        $lines = '';
-
-        for ($x = 0;$x <= $planet->getSize();$x++) {
-            $line = sprintf("<line x1='%1\$f%%' y1='0%%' x2='%1\$f%%' y2='100%%' style='stroke:#000000;stroke-width:1' />", $x * $boxSizePercent);
-
-            $lines = $lines.$line;
-        }
-
-        for ($y = 0;$y <= $planet->getSize();$y++) {
-            $line = sprintf("<line x1='0%%' y1='%1\$f%%' x2='100%%' y2='%1\$f%%' style='stroke:#000000;stroke-width:1' />", $y * $boxSizePercent);
-
-            $lines = $lines.$line;
-        }
-
-        $info = str_replace('%%DEPOSIT_BOXES%%', $boxes, $info);
-        $info = str_replace('%%GRID_LINES%%', $lines, $info);
+        $info = str_replace('%%DEPOSIT_BOXES%%', $this->depositsGrid($deposits, $planet->getSize()), $info);
 
         return $info;
+    }
+
+    private function depositsGrid($deposits, $planetSize)
+    {
+        $depositCoordArray = array();
+
+        foreach ($deposits as $deposit) {
+            $depositCoordArray[$deposit->getLocationX().','.$deposit->getLocationY()] = $deposit;
+        }
+
+        $boxes = '';
+
+        for ($row = 0;$row < $planetSize;$row++) {
+            $boxes = $boxes.'<tr>';
+
+            for ($col = 0;$col < $planetSize;$col++) {
+                $coord = $row.','.$col;
+
+                if (array_key_exists($coord, $depositCoordArray)) {
+                    $cell = $this->depositGridFullCellTemplate;
+                    $deposit = $depositCoordArray[$coord];
+
+                    $cell = str_replace('%%DEPOSIT_COLOUR%%', $deposit->getType()->getHTMLColour(), $cell);
+                    $cell = str_replace('%%DEPOSIT_COORD%%', $coord, $cell);
+                    $cell = str_replace('%%DEPOSIT_ID%%', $deposit->getDBID(), $cell);
+                } else {
+                    $cell = $this->depositGridEmptyCellTemplate;
+                }
+
+                $boxes = $boxes.$cell;
+            }
+
+            $boxes = $boxes.'</tr>';
+        }
+
+        return $boxes;
     }
 
     private function depositsTable($deposits)
