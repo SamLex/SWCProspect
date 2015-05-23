@@ -1,26 +1,36 @@
 <?php
 
-/*
-* Bootstraps the environment
-*
-* Sets up the environment in several ways:
-* - Enables error reporting
-* - Defines useful runtime constants, mainly file paths
-* - Loads, and makes available, the config file
-* - Sets up class autoloading
-*
-* Class autoloading heavily influenced by example given in PSR-4
-*/
+/**
+ * Bootstraps the environment.
+ *
+ * Sets up the environment in several ways:
+ * - Enables error reporting
+ * - Defines useful runtime constants, mainly file paths
+ * - Loads, and makes available, the config file
+ * - Sets up class autoloading
+ *
+ * Class autoloading heavily influenced by example given in PSR-4
+ */
 
 // Enable reporting of all errors (Testing purposes only)
 error_reporting(-1);
 ini_set('display_errors', 'On');
 
 // Define useful runtime constants
+
+/* Main directory, containing all needed files and directories */
 define('MAIN_DIR', dirname(__DIR__));
+
+/* Config directory, containing config.json file */
 define('CONF_DIR', MAIN_DIR.'/conf');
+
+/* Source directory, containing all class files and this file */
 define('SRC_DIR', MAIN_DIR.'/src');
+
+/* Web directory, containing all publicly visible files */
 define('WEB_DIR', MAIN_DIR.'/web');
+
+/* Project class namespace */
 define('PROJECT_NAMESPACE', 'SamLex\\SWCProspect');
 
 // Load the config file and make available as a superglobal
