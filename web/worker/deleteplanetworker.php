@@ -1,27 +1,32 @@
 <?php
 
-/*
-* The worker for the deletition of planets for SWCProspect
-*/
+/** The worker for the deletition of planets for SWCProspect. */
 
-// Bootstrap environment
+/** Bootstrap environment. */
 require_once dirname(dirname(__DIR__)).'/src/bootstrap.php';
 
 // Import nessesary classes
 use SamLex\SWCProspect\Database\MySQLDatabaseInteractor as MySQL;
-
-// Connect to database
-$db = new MySQL($CONFIG['database_address'], $CONFIG['database_user'], $CONFIG['database_password'], $CONFIG['database_name']);
+use SamLex\SWCProspect\Planet;
 
 // Sanitize and validate GET parameters
 $cleanPlanetID = filter_input(INPUT_GET, 'planetid', FILTER_SANITIZE_NUMBER_INT);
 $validPlanetID = filter_var($cleanPlanetID, FILTER_VALIDATE_INT);
 
-if ($validPlanetID) {
-    $planet = $db->getPlanet($validPlanetID);
+// Create DatabaseInteractor instance
+$db = new MySQL($CONFIG['database_address'], $CONFIG['database_user'], $CONFIG['database_password'], $CONFIG['database_name']);
 
-    if ($planet) {
-        $planet->delete();
+// Init the database
+if ($db->init() === true) {
+    // Check all passed data is of valid type
+    if (is_int($validPlanetID) === true) {
+        // Get needed class instance
+        $planet = Planet::getPlanet($db, $validPlanetID);
+
+        if (is_null($planet) === false) {
+            // Delete planet from db
+            $planet->delete();
+        }
     }
 }
 
