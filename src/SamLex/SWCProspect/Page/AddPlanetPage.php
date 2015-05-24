@@ -1,12 +1,19 @@
 <?php
 
+/** Part of SWCProspect, contains AddPlanetPage class. */
 namespace SamLex\SWCProspect\Page;
 
-/*
-    The add planet page
-*/
+use SamLex\SWCProspect\Database\DatabaseInteractor;
+use SamLex\SWCProspect\PlanetType;
+
+/**
+ * The add planet page.
+ *
+ * Shows a form with all nessessary fields to create a new planet.
+ */
 class AddPlanetPage extends Page
 {
+    /** The template for the form. */
     private $addPlanetFormTemplate = "
     <form method='post' action='worker/addplanetworker.php' data-ajax='false'>
         <label for='swcprospect-add-planet-page-name'>Name</label>
@@ -23,29 +30,47 @@ class AddPlanetPage extends Page
     </form>
     ";
 
+    /** The DatabaseInteractor instance to use to get data. */
+    private $db = null;
+
+    /**
+     * Constructs a new AddDepositPage instance.
+     *
+     * @param DatabaseInteractor $db The DatabaseInteractor instance to use to get data.
+     */
     public function __construct($db)
     {
-        $dbError = !$db->isAvailable();
-
-        if ($dbError === false) {
-            $planetTypes = $db->getPlanetTypes();
-
-            if ($planetTypes === false) {
-                $dbError = true;
-            }
-        }
-
+        $this->db = $db;
         $this->setJQPageID('swcprospect-add-planet-page');
         $this->setTitle('Add New Planet');
-        $this->addToJQHeaderBeforeTitle("<a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>");
+        $this->addToJQHeaderBeforeTitle($this->backButtonTemplate);
+    }
 
-        if ($dbError === true) {
-            $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
-        } else {
+    /**
+     * Initializes the page.
+     *
+     * @return bool True if the page initialized successfully.
+     */
+    public function init()
+    {
+        $planetTypes = PlanetType::getTypes();
+
+        if (count($planetTypes) !== 0) {
             $this->addToJQContent($this->addPlanetForm($planetTypes));
+
+            return true;
+        } else {
+            return false;
         }
     }
 
+    /**
+     * Generates the form.
+     *
+     * @param PlanetType[] $types An array of all known planet types.
+     *
+     * @return string The generated form.
+     */
     private function addPlanetForm($types)
     {
         $form = $this->addPlanetFormTemplate;
@@ -56,6 +81,14 @@ class AddPlanetPage extends Page
         return $form;
     }
 
+    /**
+     * Generates the size options for a select element in the form.
+     *
+     * @param int $min The min size option.
+     * @param int $max The max size option.
+     *
+     * @return string The generated options.
+     */
     private function genSizeOptions($min, $max)
     {
         $options = '';
@@ -67,6 +100,13 @@ class AddPlanetPage extends Page
         return $options;
     }
 
+    /**
+     * Generates the type options for a select element in the form.
+     *
+     * @param PlanetType[] $types An array of all known planet types.
+     *
+     * @return string The generated options.
+     */
     private function genTypeOptions($types)
     {
         $options = '';
