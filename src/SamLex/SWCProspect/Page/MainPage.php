@@ -89,7 +89,7 @@ class MainPage extends Page
      *
      * @param Planet $planet The planet to generate the tile for.
      *
-     * @return string The generate planet tile
+     * @return string The generated planet tile
      */
     private function planetTile($planet)
     {
@@ -111,7 +111,7 @@ class MainPage extends Page
      * Generates the add new planet tile.
      *
      *
-     * @return string The generate planet tile
+     * @return string The generated new planet tile
      */
     private function newPlanetTile()
     {
