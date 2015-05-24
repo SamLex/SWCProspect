@@ -1,14 +1,19 @@
 <?php
 
+/** Part of SWCProspect, contains MainPage class. */
 namespace SamLex\SWCProspect\Page;
 
+use SamLex\SWCProspect\Database\DatabaseInteractor;
 use SamLex\SWCProspect\Planet;
 
-/*
-    The main landing page
-*/
+/**
+ * The main page.
+ *
+ * Shows a tile for each planet and an add new planet tile.
+ */
 class MainPage extends Page
 {
+    /** The template for the planet tiles. */
     private $planetTileTemplate = "
     <a href='viewplanet.php?planetid=%%PLANET_ID%%'>
         <div class='ui-corner-all main-page-planet-tile'>
@@ -26,6 +31,7 @@ class MainPage extends Page
     </a>
     ";
 
+    /** The template for the add new planet tile. */
     private $newPlanetTileTemplate = "
     <a href='addplanet.php'>
         <div class='ui-corner-all main-page-planet-tile'>
@@ -45,50 +51,47 @@ class MainPage extends Page
     </a>
     ";
 
+    /** The DatabaseInteractor instance to use to get data. */
+    private $db = null;
+
+    /**
+     * Constructs a new MainPage instance.
+     *
+     * @param DatabaseInteractor $db The DatabaseInteractor instance to use to get data.
+     */
     public function __construct($db)
     {
-        $dbError = !$db->isAvailable();
-
-        if ($dbError === false) {
-            $planets = $db->getPlanets();
-
-            if ($planets === false) {
-                $dbError = true;
-            } else {
-                $depositNums = array();
-
-                foreach ($planets as $planet) {
-                    $numDeposits = $db->getNumDeposits($planet->getDBID());
-
-                    if ($numDeposits === false) {
-                        $dbError = true;
-                        break;
-                    } else {
-                        $depositNums[$planet->getName()] = $numDeposits;
-                    }
-                }
-            }
-        }
-
+        $this->db = db;
         $this->setJQPageID('swcprospect-main-page');
         $this->setTitle('Welcome to SWCProspect');
-
-        if ($dbError === true) {
-            $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
-        } else {
-            foreach ($planets as $planet) {
-                $this->addToJQContent($this->planetTile($planet, $depositNums[$planet->getName()]));
-            }
-
-            $this->addToJQContent($this->newPlanetTile());
-        }
     }
 
-    /*
-        Replaces placeholders in planet tile template and returns the resulting string
-    */
-    private function planetTile($planet, $numDeposits)
+    /**
+     * Initializes the page.
+     *
+     * @return bool True if the page initialized successfully.
+     */
+    public function init()
     {
+        $planets = Planet::getPlanets();
+
+        foreach ($planets as $planet) {
+            $this->addToJQContent($this->planetTile($planet));
+        }
+
+        $this->addToJQContent($this->newPlanetTile());
+    }
+
+    /**
+     * Generates a planet tile.
+     *
+     * @param Planet $planet The planet to generate the tile for.
+     *
+     * @return string The generate planet tile
+     */
+    private function planetTile($planet)
+    {
+        $numDeposits = $planet->getNumDeposits();
         $showSize = 5 + (($planet->getSize() - 1) * (40 / 19));
 
         $tile = $this->planetTileTemplate;
@@ -102,9 +105,12 @@ class MainPage extends Page
         return $tile;
     }
 
-     /*
-        Replaces placeholders in new planet tile template and returns the resulting string
-    */
+    /**
+     * Generates the add new planet tile.
+     *
+     *
+     * @return string The generate planet tile
+     */
     private function newPlanetTile()
     {
         $newTile = $this->newPlanetTileTemplate;
