@@ -4,7 +4,12 @@
 namespace SamLex\SWCProspect\Page;
 
 /**
- As such any CSS and JS is recommended to be put in the page.{js/css} files.
+ * The base page from which all other pages extend.
+ *
+ * Overriders are recommended to call the various setter methods from there constructors.
+ *
+ * Due the jQuery Mobile's page loading mechanism, any CSS and JS must be included in every page so that, no matter the entry point, everything looks and acts properly.
+ * As such any CSS and JS is recommended to be put in the page.{js/css} files.
  */
 abstract class Page
 {
