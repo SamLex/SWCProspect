@@ -18,19 +18,19 @@ ini_set('display_errors', 'On');
 
 // Define useful runtime constants
 
-/* Main directory, containing all needed files and directories */
+/* Main directory, containing all needed files and directories. */
 define('MAIN_DIR', dirname(__DIR__));
 
-/* Config directory, containing config.json file */
+/* Config directory, containing config.json file. */
 define('CONF_DIR', MAIN_DIR.'/conf');
 
-/* Source directory, containing all class files and this file */
+/* Source directory, containing all class files and this file. */
 define('SRC_DIR', MAIN_DIR.'/src');
 
-/* Web directory, containing all publicly visible files */
+/* Web directory, containing all publicly visible files. */
 define('WEB_DIR', MAIN_DIR.'/web');
 
-/* Project class namespace */
+/* Project class namespace. */
 define('PROJECT_NAMESPACE', 'SamLex\\SWCProspect');
 
 // Load the config file and make available as a superglobal

@@ -85,7 +85,7 @@ abstract class Page
         </body>
     </html>
     ";
-    
+
     /** A template for the back button needed in some pages. */
     private $backButtonTemplate = "
     <a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>

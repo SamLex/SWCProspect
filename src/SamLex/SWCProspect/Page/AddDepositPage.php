@@ -1,12 +1,20 @@
 <?php
 
+/** Part of SWCProspect, contains AddDepositPage class. */
 namespace SamLex\SWCProspect\Page;
 
-/*
-    The add deposit page
-*/
+use SamLex\SWCProspect\Database\DatabaseInteractor;
+use SamLex\SWCProspect\Planet;
+use SamLex\SWCProspect\DepositType;
+
+/**
+ * The add deposit page.
+ *
+ * Shows a form with all nessessary fields to create a new deposit.
+ */
 class AddDepositPage extends Page
 {
+    /** The template for the form. */
     private $addDepositFormTemplate = "
     <form method='post' action='worker/adddepositworker.php' data-ajax='false'>
         <input type='hidden' name='planetid' value='%%PLANET_ID%%'>
@@ -28,35 +36,54 @@ class AddDepositPage extends Page
     </form>
     ";
 
+    /** The DatabaseInteractor instance to use to get data. */
+    private $db = null;
+
+    /** The planet id of the planet the new deposit is on. */
+    private $planetID = -1;
+
+    /**
+     * Constructs a new AddDepositPage instance.
+     *
+     * @param DatabaseInteractor $db       The DatabaseInteractor instance to use to get data.
+     * @param int                $planetID The planet id of the planet the new deposit is on.
+     */
     public function __construct($db, $planetID)
     {
-        $dbError = !$db->isAvailable();
-
-        if ($dbError === false) {
-            $depositTypes = $db->getDepositTypes();
-
-            if ($depositTypes === false) {
-                $dbError = true;
-            } else {
-                $planet = $db->getPlanet($planetID);
-
-                if ($planet === false) {
-                    $dbError = true;
-                }
-            }
-        }
-
+        $this->db = $db;
+        $this->planetID = $planetID;
         $this->setJQPageID('swcprospect-add-deposit-page');
         $this->setTitle('Add New Deposit');
-        $this->addToJQHeaderBeforeTitle("<a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>");
+        $this->addToJQHeaderBeforeTitle($this->backButtonTemplate);
+    }
 
-        if ($dbError === true) {
-            $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
-        } else {
+    /**
+     * Initializes the page.
+     *
+     * @return bool True if the page initialized successfully.
+     */
+    public function init()
+    {
+        $depositTypes = DepositType::getTypes();
+        $planet = Planet::getPlanet();
+
+        if (!is_null($planet) && (count($depositTypes) !== 0)) {
             $this->addToJQContent($this->addDepositForm($depositTypes, $planet));
+
+            return true;
+        } else {
+            return false;
         }
     }
 
+    /**
+     * Generates the form.
+     *
+     * @param DepositType[] $depositTypes An array of all known deposit types.
+     * @param Planet        $planet       The planet the new deposit is on.
+     *
+     * @return string The generated form.
+     */
     private function addDepositForm($depositTypes, $planet)
     {
         $form = $this->addDepositFormTemplate;
@@ -69,6 +96,13 @@ class AddDepositPage extends Page
         return $form;
     }
 
+    /**
+     * Generates the type options for a select element in the form.
+     *
+     * @param DepositType[] $types An array of all known deposit types.
+     *
+     * @return string The generated options.
+     */
     private function genTypeOptions($types)
     {
         $options = '';
@@ -80,6 +114,13 @@ class AddDepositPage extends Page
         return $options;
     }
 
+    /**
+     * Generates the location options for a select element in the form.
+     *
+     * @param int $size The max location option.
+     *
+     * @return string The generated options.
+     */
     private function genLocOptions($size)
     {
         $options = '';
