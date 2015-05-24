@@ -80,6 +80,8 @@ class MainPage extends Page
         }
 
         $this->addToJQContent($this->newPlanetTile());
+        
+        return true;
     }
 
     /**
