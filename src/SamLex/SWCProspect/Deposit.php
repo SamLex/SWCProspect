@@ -157,14 +157,4 @@ class Deposit
     {
         return $this->depositType;
     }
-
-    /*public function setSize($newSize)
-    {
-        $this->size = $newSize;
-    }
-
-    public function setType($newType)
-    {
-        $this->depositType = $newType;
-    }*/
 }
