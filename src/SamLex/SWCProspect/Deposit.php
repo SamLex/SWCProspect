@@ -157,4 +157,17 @@ class Deposit
     {
         return $this->depositType;
     }
+
+    /**
+     * Returns the deposit with the given id.
+     *
+     * @param DatabaseInteractor $db        The database to get deposit from.
+     * @param int                $depositID The deposit id.
+     *
+     * @return Deposit
+     */
+    public static function getDeposit($db, $depositID)
+    {
+        return $db->getDeposit($depositID);
+    }
 }

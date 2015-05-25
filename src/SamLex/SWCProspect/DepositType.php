@@ -70,4 +70,29 @@ class DepositType
     {
         return $this->htmlColour;
     }
+
+    /**
+     * Returns an array of all deposit types.
+     *
+     * @param DatabaseInteractor $db The database to get types from.
+     *
+     * @return DepositType[]
+     */
+    public static function getTypes($db)
+    {
+        return $db->getDepositTypes();
+    }
+
+    /**
+     * Returns the type with the given id.
+     *
+     * @param DatabaseInteractor $db     The database to get type from.
+     * @param int                $typeID
+     *
+     * @return DepositType
+     */
+    public static function getType($db, $typeID)
+    {
+        return $db->getDepositType($typeID);
+    }
 }

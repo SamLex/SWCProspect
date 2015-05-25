@@ -1,70 +1,131 @@
 <?php
 
+/** Part of SWCProspect, contains DatabaseInteractor interface. */
 namespace SamLex\SWCProspect\Database;
 
-/*
-    Interface defining behaviour expected for back-end database/datasource
-*/
+use SamLex\SWCProspect\Planet;
+use SamLex\SWCProspect\PlanetType;
+use SamLex\SWCProspect\Deposit;
+use SamLex\SWCProspect\DepositType;
+
+/** Interface defining behaviour expected for back-end database/datasource. */
 interface DatabaseInteractor
 {
-    // Is the database available
-    // 'Available' being likely to be able to return data
-    public function isAvailable();
+    /**
+     * Initializes the database interactor.
+     *
+     * @return bool True if the DI initialized successfully.
+     */
+    public function init();
 
-    // Get the deposit type with the given unique id and return as DepositType object
-    // Return false on error
-    public function getDepositType($id);
-
-    // Get the planet type with the given unique id and return as PlanetType object
-    // Return false on error
-    public function getPlanetType($id);
-
-    // Get the deposit data with the given unique id and return as Deposit object
-    // Return false on error
-    public function getDeposit($id);
-
-    // Get the planet data with the given unique id and return as Planet object
-    // Return false on error
-    public function getPlanet($id);
-
-    // Get all available deposit types and return as array of DepositType objects
-    // Return false on error
-    public function getDepositTypes();
-
-    // Get all available planet types and return as array of PlanetType objects
-    // Return false on error
-    public function getPlanetTypes();
-
-    // Get all available planet data and return as array of Planet objects
-    // Return false on error
+    /**
+     * Returns an array of all known planets.
+     *
+     * @return Planet[]
+     */
     public function getPlanets();
 
-    // Get all available deposit data associated with the planet with the given unique id and return as array of Deposit objects
-    // Return false on error
-    public function getDeposits($planetID);
+    /**
+     * Returns the type with the given id.
+     *
+     * @param int $typeID
+     *
+     * @return PlanetType
+     */
+    public function getPlanetType($typeID);
 
-    // Return the number of deposits associated with the planet with the given unique id
-    // Return false on error
+    /**
+     * Returns the number of deposits on the given planet.
+     *
+     * @param int $planetID
+     *
+     * @return int
+     */
     public function getNumDeposits($planetID);
 
-    // Save the given Planet object
-    // A negative id within the object indicates a new record should be created
-    // Returns the given object or, if a new record is created, a new object reflecting the change
-    // Returns false on error
-    public function savePlanet($planet);
+    /**
+     * Returns an array of all known planet types.
+     *
+     * @return PlanetType[]
+     */
+    public function getPlanetTypes();
 
-    // Save the given Deposit object
-    // A negative id within the object indicates a new record should be created
-    // Returns the given object or, if a new record is created, a new object reflecting the change
-    // Returns false on error
+    /**
+     * Returns the planet with the given id.
+     *
+     * @param int $planetID
+     *
+     * @return Planet
+     */
+    public function getPlanet($planetID);
+
+    /**
+     * Returns an array of all deposits on the given planet.
+     *
+     * @param int $planetID
+     *
+     * @return Deposit[]
+     */
+    public function getDeposits($planetID);
+
+    /**
+     * Returns the type with the given id.
+     *
+     * @param int $typeID
+     *
+     * @return DepositType
+     */
+    public function getDepositType($typeID);
+
+    /**
+     * Returns an array of all known deposit types.
+     *
+     * @return DepositType[]
+     */
+    public function getDepositTypes();
+
+    /**
+     * Saves the given deposit to the database.
+     *
+     * @param Deposit $deposit
+     *
+     * @return int The newly assigned DBID if it gets one, or the current one
+     */
     public function saveDeposit($deposit);
 
-    // Delete the given Planet object
-    // Returns a new object with a negative unique id, or false on error
-    // Deletion of a planet should result in the deletion of associated deposits
-    public function deletePlanet($planet);
+    /**
+     * Returns the deposit the given id.
+     *
+     * @param int $depositID
+     *
+     * @return Deposit
+     */
+    public function getDeposit($depositID);
 
-    // Delete the given Deposit object
-    // Returns a new object with a negative unique id, or false on error
+    /**
+     * Saves the given planet to the database.
+     *
+     * @param Planet $planet
+     *
+     * @return int The newly assigned DBID if it gets one, or the current one
+     */
+    public function savePlanet($planet);
+
+    /**
+     * Deletes the given deposit from the database.
+     *
+     * @param Deposit $deposit
+     *
+     * @return int Negative number on success, current DBID on failure
+     */
     public function deleteDeposit($deposit);
+
+    /**
+     * Deletes the given planet from the database.
+     *
+     * @param Planet $planet
+     *
+     * @return int Negative number on success, current DBID on failure
+     */
+    public function deletePlanet($planet);
 }

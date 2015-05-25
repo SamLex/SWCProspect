@@ -1,24 +1,111 @@
 <?php
 
+/** Part of SWCProspect, contains MySQLDatabaseInteractor class. */
 namespace SamLex\SWCProspect\Database;
 
-use SamLex\SWCProspect\Deposit;
-use SamLex\SWCProspect\DepositType;
 use SamLex\SWCProspect\Planet;
 use SamLex\SWCProspect\PlanetType;
+use SamLex\SWCProspect\Deposit;
+use SamLex\SWCProspect\DepositType;
 
-/*
-    Implements the DatabaseInteractor interface using MySQL
-
-    See the interface for details on methods
-*/
+/** Implements the DatabaseInteractor interface using MySQL. */
 class MySQLDatabaseInteractor implements DatabaseInteractor
 {
-    private $mysql_con;
-    private $available = false;
+    /** SQL statement used to get all planets. */
+    private $getPlanetsSQL = 'SELECT ID, Name, Size, PlanetTypeID FROM Planet';
 
+    /** SQL statement used to get a planet type. */
+    private $getPlanetTypeSQL = 'SELECT ID, Description, HTMLColour FROM PlanetType WHERE ID=? LIMIT 1';
+
+    /** SQL statement used to get the number of deposits on a planet */
+    private $getNumDepositsSQL = 'SELECT COUNT(ID) FROM Deposit WHERE PlanetID=? LIMIT 1';
+
+    /** SQL statement used to get all planet types. */
+    private $getPlanetTypesSQL = 'SELECT ID, Description, HTMLColour FROM PlanetType';
+
+    /** SQL statement used to get a planet. */
+    private $getPlanetSQL = 'SELECT ID, Name, Size, PlanetTypeID FROM Planet WHERE ID=? LIMIT 1';
+
+    /** SQL statement used to get all deposits on a planet. */
+    private $getDepositsSQL = 'SELECT ID, Size, LocationX, LocationY, DepositTypeID FROM Deposit WHERE PlanetID=?';
+
+    /** SQL statement used to get a deposit type. */
+    private $getDepositTypeSQL = 'SELECT ID, Material, HTMLColour FROM DepositType WHERE ID=? LIMIT 1';
+
+    /** SQL statement used to get all deposit types. */
+    private $getDepositTypesSQL = 'SELECT ID, Material, HTMLColour FROM DepositType';
+
+    /** SQL statement used to save a new deposit. */
+    private $saveDepositNewSQL = 'INSERT INTO Deposit (Size, LocationX, LocationY, PlanetID, DepositTypeID) VALUES (?,?,?,?,?)';
+
+    /** SQL statement used to save an existing deposit. */
+    private $saveDepositExistingSQL = 'UPDATE Deposit SET Size=?, LocationX=?, LocationY=?, PlanetID=?, DepositTypeID=? WHERE ID=?';
+
+    /** SQL statement used to get a deposit. */
+    private $getDepositSQL = 'SELECT ID, Size, LocationX, LocationY, PlanetID, DepositTypeID FROM Deposit WHERE ID=? LIMIT 1';
+
+    /** SQL statement used to save a new planet. */
+    private $savePlanetNewSQL = 'INSERT INTO Planet (Name, Size, PlanetTypeID) VALUES (?,?,?)';
+
+    /** SQL statement used to save an existing planet. */
+    private $savePlanetExisitingSQL = 'UPDATE Planet SET Name=?, Size=?, PlanetTypeID=? WHERE ID=?';
+
+    /** SQL statement used to delete an existing deposit. */
+    private $deleteDepositSQL = 'DELETE FROM Deposit WHERE ID=?';
+
+    /** SQL statement used to delete an existing planet. */
+    private $deletePlanetSQL = 'DELETE FROM Planet WHERE ID=?';
+
+    /**
+     * The address of the MySQL server.
+     *
+     * @var string
+     */
+    private $mysqlAddress = '';
+
+    /**
+     * The username to connect to the MySQL server with.
+     *
+     * @var string
+     */
+    private $mysqlUsername = '';
+
+    /**
+     * The password to connect to the MySQL server with.
+     *
+     * @var string
+     */
+    private $mysqlPassword = '';
+
+    /**
+     * The database to use on the MySQL server.
+     *
+     * @var string
+     */
+    private $mysqlDatabase = '';
+
+    /**
+     * The active MySQL connection.
+     *
+     * @var \mysqli
+     */
+    private $mysql_con = null;
+
+    /**
+     * Constructs a new MySQLDatabaseInteractor instance.
+     *
+     * @param string $address  The address of the MySQL server.
+     * @param string $username The username to connect to the MySQL server with.
+     * @param string $password The password to connect to the MySQL server with.
+     * @param string $database The database to use on the MySQL server.
+     */
     public function __construct($address, $username, $password, $database)
     {
+        $this->mysqlAddress = $address;
+        $this->mysqlUsername = $username;
+        $this->mysqlPassword = $password;
+        $this->mysqlDatabase = $database;
+
         $this->mysql_con = new \mysqli($address, $username, $password, $database);
 
         if ($this->mysql_con->connect_error) {
@@ -28,584 +115,424 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
         }
     }
 
+    /**
+     * Initializes the MySQL database connection.
+     *
+     * @return bool True if the connection initialized successfully.
+     */
+    public function init()
+    {
+        $this->mysql_con = new \mysqli($this->mysqlAddress, $this->mysqlUsername, $this->mysqlPassword, $this->mysqlDatabase);
+
+        if (!is_null($this->mysql_con->connect_error)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Deconstructs the instance.
+     */
     public function __destruct()
     {
-        $this->mysql_con->close();
+        // Ensure connection is closed nicely.
+        if (!is_null($this->mysql_con)) {
+            $this->mysql_con->close();
+        }
     }
 
-    public function isAvailable()
-    {
-        return $this->available;
-    }
-
-    public function getDepositType($id)
-    {
-        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Material, HTMLColour FROM DepositType WHERE ID=? LIMIT 1;');
-
-        if (!$sqlStmt) {
-            return false;
-        }
-
-        if (!$sqlStmt->bind_param('i', $id)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_result($typeID, $mat, $colour)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->fetch()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $sqlStmt->close();
-
-        return new DepositType($typeID, $mat, $colour);
-    }
-
-    public function getPlanetType($id)
-    {
-        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Description, HTMLColour FROM PlanetType WHERE ID=? LIMIT 1;');
-
-        if (!$sqlStmt) {
-            die($this->mysql_con->error);
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_param('i', $id)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_result($typeID, $des, $colour)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->fetch()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $sqlStmt->close();
-
-        return new PlanetType($typeID, $des, $colour);
-    }
-
-    public function getDeposit($id)
-    {
-        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Size, LocationX, LocationY, PlanetID, DepositTypeID FROM Deposit WHERE ID=? LIMIT 1;');
-
-        if (!$sqlStmt) {
-            return false;
-        }
-
-        if (!$sqlStmt->bind_param('i', $id)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_result($depositID, $size, $locX, $locY, $planetID, $typeID)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->fetch()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $sqlStmt->close();
-
-        $planet = $this->getPlanet($planetID);
-        $type = $this->getDepositType($typeID);
-
-        if (!$planet) {
-            return false;
-        }
-
-        if (!$type) {
-            return false;
-        }
-
-        return new Deposit($size, $locX, $locY, $planet, $type, $this, $depositID);
-    }
-
-    public function getPlanet($id)
-    {
-        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Name, Size, PlanetTypeID FROM Planet WHERE ID=? LIMIT 1;');
-
-        if (!$sqlStmt) {
-            return false;
-        }
-
-        if (!$sqlStmt->bind_param('i', $id)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_result($planetID, $name, $size, $typeID)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->fetch()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $sqlStmt->close();
-
-        $type = $this->getPlanetType($typeID);
-
-        if (!$type) {
-            return false;
-        }
-
-        return new Planet($name, $size, $type, $this, $planetID);
-    }
-
-    public function getDepositTypes()
-    {
-        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Material, HTMLColour FROM DepositType;');
-
-        if (!$sqlStmt) {
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_result($depositTypeID, $mat, $colour)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $depositTypes = array();
-
-        while ($sqlStmt->fetch()) {
-            $depositTypes[] = new DepositType($depositTypeID, $mat, $colour);
-        }
-
-        $sqlStmt->close();
-
-        return $depositTypes;
-    }
-
-    public function getPlanetTypes()
-    {
-        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Description, HTMLColour FROM PlanetType;');
-
-        if (!$sqlStmt) {
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_result($planetTypeID, $des, $colour)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $planetTypes = array();
-
-        while ($sqlStmt->fetch()) {
-            $planetTypes[] = new PlanetType($planetTypeID, $des, $colour);
-        }
-
-        $sqlStmt->close();
-
-        return $planetTypes;
-    }
-
+    /**
+     * Returns an array of all known planets.
+     *
+     * @return Planet[]
+     */
     public function getPlanets()
     {
-        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Name, Size, PlanetTypeID FROM Planet;');
-
-        if (!$sqlStmt) {
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_result($planetID, $name, $size, $typeID)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
         $planets = array();
+        $stmt = $this->mysql_con->prepare($this->getPlanetsSQL);
 
-        while ($sqlStmt->fetch()) {
-            $type = $this->getPlanetType($typeID);
+        if ($stmt !== false) {
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($planetID, $name, $size, $typeID);
 
-            if (!$type) {
-                continue;
+            while ($stmt->fetch()) {
+                $type = $this->getPlanetType($typeID);
+
+                if (!is_null($type)) {
+                    $planets[] = new Planet($name, $size, $type, $this, $planetID);
+                }
             }
 
-            $planets[] = new Planet($name, $size, $type, $this, $planetID);
+            $stmt->close();
         }
-
-        $sqlStmt->close();
 
         return $planets;
     }
 
-    public function getDeposits($planetID)
+    /**
+     * Returns the type with the given id.
+     *
+     * @param int $typeID
+     *
+     * @return PlanetType
+     */
+    public function getPlanetType($id)
     {
-        $planet = $this->getPlanet($planetID);
+        $type = null;
+        $stmt = $this->mysql_con->prepare($this->getPlanetTypeSQL);
 
-        if (!$planet) {
-            return false;
-        }
+        if ($stmt !== false) {
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($typeID, $des, $colour);
 
-        $sqlStmt = $this->mysql_con->prepare('SELECT ID, Size, LocationX, LocationY, DepositTypeID FROM Deposit WHERE PlanetID=?;');
-
-        if (!$sqlStmt) {
-            return false;
-        }
-
-        if (!$sqlStmt->bind_param('i', $planetID)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->bind_result($depositID, $size, $locX, $locY, $typeID)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $deposits = array();
-
-        while ($sqlStmt->fetch()) {
-            $type = $this->getDepositType($typeID);
-
-            if (!$type) {
-                continue;
+            while ($stmt->fetch()) {
+                $type = new PlanetType($typeID, $des, $colour);
             }
 
-            $deposits[] = new Deposit($size, $locX, $locY, $planet, $type, $this, $depositID);
+            $stmt->close();
         }
 
-        $sqlStmt->close();
-
-        return $deposits;
+        return $type;
     }
 
+    /**
+     * Returns the number of deposits on the given planet.
+     *
+     * @param int $planetID
+     *
+     * @return int
+     */
     public function getNumDeposits($planetID)
     {
-        $sqlStmt = $this->mysql_con->prepare('SELECT COUNT(ID) FROM Deposit WHERE PlanetID=? LIMIT 1;');
+        $num = 0;
+        $stmt = $this->mysql_con->prepare($this->getNumDepositsSQL);
 
-        if (!$sqlStmt) {
-            return 0;
+        if ($stmt !== false) {
+            $stmt->bind_param('i', $planetID);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($numDeposits);
+
+            while ($stmt->fetch()) {
+                $num = $numDeposits;
+            }
+
+            $stmt->close();
         }
 
-        if (!$sqlStmt->bind_param('i', $planetID)) {
-            $sqlStmt->close();
-
-            return 0;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return 0;
-        }
-
-        if (!$sqlStmt->store_result()) {
-            $sqlStmt->close();
-
-            return 0;
-        }
-
-        if (!$sqlStmt->bind_result($numDeposits)) {
-            $sqlStmt->close();
-
-            return 0;
-        }
-
-        if (!$sqlStmt->fetch()) {
-            $sqlStmt->close();
-
-            return 0;
-        }
-
-        $sqlStmt->close();
-
-        return $numDeposits;
+        return $num;
     }
 
-    public function savePlanet($planet)
+    /**
+     * Returns an array of all known planet types.
+     *
+     * @return PlanetType[]
+     */
+    public function getPlanetTypes()
     {
-        if ($planet->getDBID() < 0) {
-            $sqlStmt = $this->mysql_con->prepare('INSERT INTO Planet (Name, Size, PlanetTypeID) VALUES (?,?,?);');
-        } else {
-            $sqlStmt = $this->mysql_con->prepare('UPDATE Planet SET Name=?, Size=?, PlanetTypeID=? WHERE ID=?;');
-        }
+        $types = array();
+        $stmt = $this->mysql_con->prepare($this->getPlanetTypesSQL);
 
-        if (!$sqlStmt) {
-            return false;
-        }
+        if ($stmt !== false) {
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($planetTypeID, $des, $colour);
 
-        if ($planet->getDBID() < 0) {
-            $planetNameBindable = $planet->getName();
-            $planetSizeBindable = $planet->getSize();
-            $planetTypeIDBindable = $planet->getType()->getDBID();
-
-            if (!$sqlStmt->bind_param('sii', $planetNameBindable, $planetSizeBindable, $planetTypeIDBindable)) {
-                $sqlStmt->close();
-
-                return false;
+            while ($stmt->fetch()) {
+                $types[] = new PlanetType($planetTypeID, $des, $colour);
             }
-        } else {
-            $planetNameBindable = $planet->getName();
-            $planetSizeBindable = $planet->getSize();
-            $planetTypeIDBindable = $planet->getType()->getDBID();
-            $planetIDBindable = $planet->getDBID();
 
-            if (!$sqlStmt->bind_param('siii', $planetNameBindable, $planetSizeBindable, $planetTypeIDBindable, $planetIDBindable)) {
-                $sqlStmt->close();
+            $stmt->close();
+        }
 
-                return false;
+        return $types;
+    }
+
+    /**
+     * Returns the planet with the given id.
+     *
+     * @param int $planetID
+     *
+     * @return Planet
+     */
+    public function getPlanet($planetID)
+    {
+        $planet = null;
+        $stmt = $this->mysql_con->prepare($this->getPlanetSQL);
+
+        if ($stmt !== false) {
+            $stmt->bind_param('i', $planetID);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($id, $name, $size, $typeID);
+
+            while ($stmt->fetch()) {
+                $type = $this->getPlanetType($typeID);
+
+                if (!is_null($type)) {
+                    $planet = new Planet($name, $size, $type, $this, $id);
+                }
             }
+
+            $stmt->close();
         }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if ($planet->getDBID() < 0) {
-            $planet = new Planet($planet->getName(), $planet->getSize(), $planet->getType(), $this, $sqlStmt->insert_id);
-        }
-
-        $sqlStmt->close();
 
         return $planet;
     }
 
+    /**
+     * Returns an array of all deposits on the given planet.
+     *
+     * @param int $planetID
+     *
+     * @return Deposit[]
+     */
+    public function getDeposits($planetID)
+    {
+        $deposits = array();
+        $planet = $this->getPlanet($planetID);
+        $stmt = $this->mysql_con->prepare($this->getDepositsSQL);
+
+        if ($stmt !== false && !is_null($planet)) {
+            $stmt->bind_param('i', $planetID);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($depositID, $size, $locX, $locY, $typeID);
+
+            while ($stmt->fetch()) {
+                $type = $this->getDepositType($typeID);
+
+                if (!is_null($type)) {
+                    $deposits[] = new Deposit($size, $locX, $locY, $planet, $type, $this, $depositID);
+                }
+            }
+
+            $stmt->close();
+        }
+
+        return $deposits;
+    }
+
+    /**
+     * Returns the type with the given id.
+     *
+     * @param int $typeID
+     *
+     * @return DepositType
+     */
+    public function getDepositType($typeID)
+    {
+        $type = null;
+        $stmt = $this->mysql_con->prepare($this->getDepositTypeSQL);
+
+        if ($stmt !== false) {
+            $stmt->bind_param('i', $typeID);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($id, $mat, $colour);
+
+            while ($stmt->fetch()) {
+                $type = new DepositType($id, $mat, $colour);
+            }
+
+            $stmt->close();
+        }
+
+        return $type;
+    }
+
+    /**
+     * Returns an array of all known deposit types.
+     *
+     * @return DepositType[]
+     */
+    public function getDepositTypes()
+    {
+        $types = array();
+        $stmt = $this->mysql_con->prepare($this->getDepositTypesSQL);
+
+        if ($stmt !== false) {
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($depositTypeID, $mat, $colour);
+
+            while ($stmt->fetch()) {
+                $types[] = new DepositType($depositTypeID, $mat, $colour);
+            }
+
+            $stmt->close();
+        }
+
+        return $types;
+    }
+
+    /**
+     * Saves the given deposit to the database.
+     *
+     * @param Deposit $deposit
+     *
+     * @return int The newly assigned DBID if it gets one, or the current one
+     */
     public function saveDeposit($deposit)
     {
-        if ($deposit->getDBID() < 0) {
-            $sqlStmt = $this->mysql_con->prepare('INSERT INTO Deposit (Size, LocationX, LocationY, PlanetID, DepositTypeID) VALUES (?,?,?,?,?);');
+        // Unpack object for SQL binding
+        $depositID = $deposit->getDBID();
+        $depositSize = $deposit->getSize();
+        $depositLocX = $deposit->getLocationX();
+        $depositLocY = $deposit->getLocationY();
+        $planetID = $deposit->getPlanet()->getDBID();
+        $typeID = $deposit->getType()->getDBID();
+
+        if ($depositID < 0) {
+            $stmt = $this->mysql_con->prepare($this->saveDepositNewSQL);
         } else {
-            $sqlStmt = $this->mysql_con->prepare('UPDATE Deposit SET Size=?, LocationX=?, LocationY=?, PlanetID=?, DepositTypeID=? WHERE ID=?;');
+            $stmt = $this->mysql_con->prepare($this->saveDepositExistingSQL);
         }
 
-        if (!$sqlStmt) {
-            return false;
-        }
-
-        if ($deposit->getDBID() < 0) {
-            $depositSizeBindable = $deposit->getSize();
-            $depositLocXBindable = $deposit->getLocationX();
-            $depositLocYBindable = $deposit->getLocationY();
-            $depositPlanetIDBindable = $deposit->getPlanet()->getDBID();
-            $depositTypeIDBindable = $deposit->getType()->getDBID();
-
-            if (!$sqlStmt->bind_param('iiiii', $depositSizeBindable, $depositLocXBindable, $depositLocYBindable, $depositPlanetIDBindable, $depositTypeIDBindable)) {
-                $sqlStmt->close();
-
-                return false;
+        if ($stmt !== false) {
+            if ($depositID < 0) {
+                $stmt->bind_param('iiiii', $depositSize, $depositLocX, $depositLocY, $planetID, $typeID);
+            } else {
+                $stmt->bind_param('iiiiii', $depositSize, $depositLocX, $depositLocY, $planetID, $typeID, $depositID);
             }
-        } else {
-            $depositSizeBindable = $deposit->getSize();
-            $depositLocXBindable = $deposit->getLocationX();
-            $depositLocYBindable = $deposit->getLocationY();
-            $depositPlanetIDBindable = $deposit->getPlanet()->getDBID();
-            $depositTypeIDBindable = $deposit->getType()->getDBID();
-            $depositIDBindable = $deposit->getDBID();
 
-            if (!$sqlStmt->bind_param('iiiiii', $depositSizeBindable, $depositLocXBindable, $depositLocYBindable, $depositPlanetIDBindable, $depositTypeIDBindable, $depositIDBindable)) {
-                $sqlStmt->close();
-
-                return false;
+            if ($stmt->execute() === true && $depositID < 0) {
+                $depositID = $stmt->insert_id;
             }
+
+            $stmt->close();
         }
 
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
+        return $depositID;
+    }
 
-            return false;
+    /**
+     * Returns the deposit the given id.
+     *
+     * @param int $depositID
+     *
+     * @return Deposit
+     */
+    public function getDeposit($depositID)
+    {
+        $deposit = null;
+        $stmt = $this->mysql_con->prepare($this->getDepositSQL);
+
+        if ($stmt !== false) {
+            $stmt->bind_param('i', $depositID);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($depositID, $size, $locX, $locY, $planetID, $typeID);
+
+            while ($stmt->fetch()) {
+                $type = $this->getDepositType($typeID);
+                $planet = $this->getPlanet($planetID);
+
+                if (!is_null($type) && !is_null($planet)) {
+                    $deposit = new Deposit($size, $locX, $locY, $planet, $type, $this, $depositID);
+                }
+            }
+
+            $stmt->close();
         }
-
-        if ($deposit->getDBID() < 0) {
-            $deposit = new Deposit($deposit->getSize(), $deposit->getLocationX(), $deposit->getLocationY(), $deposit->getPlanet(), $deposit->getType(), $sqlStmt->insert_id);
-        }
-
-        $sqlStmt->close();
 
         return $deposit;
     }
 
-    // Deletion of deposits is handled by forgein key constraints
-    public function deletePlanet($planet)
+    /**
+     * Saves the given planet to the database.
+     *
+     * @param Planet $planet
+     *
+     * @return int The newly assigned DBID if it gets one, or the current one
+     */
+    public function savePlanet($planet)
     {
-        if ($planet->getDBID() < 0) {
-            return false;
+        $planetID = $planet->getDBID();
+        $planetName = $planet->getName();
+        $planetSize = $planet->getSize();
+        $typeID = $planet->getType()->getDBID();
+
+        if ($planetID < 0) {
+            $stmt = $this->mysql_con->prepare($this->savePlanetNewSQL);
+        } else {
+            $stmt = $this->mysql_con->prepare($this->savePlanetExistingSQL);
         }
 
-        $sqlStmt = $this->mysql_con->prepare('DELETE FROM Planet WHERE ID=?');
+        if ($stmt !== false) {
+            if ($planetID < 0) {
+                $stmt->bind_param('sii', $planetName, $planetSize, $typeID);
+            } else {
+                $stmt->bind_param('siii', $planetName, $planetSize, $typeID, $planetID);
+            }
 
-        if (!$sqlStmt) {
-            return false;
+            if ($stmt->execute() === true && $planetID < 0) {
+                $planetID = $stmt->insert_id;
+            }
+
+            $stmt->close();
         }
 
-        $planetIDBindable = $planet->getDBID();
-        if (!$sqlStmt->bind_param('i', $planetIDBindable)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $sqlStmt->close();
-
-        return new Planet($planet->getName(), $planet->getSize(), $planet->getType(), $this, -1);
+        return $planetID;
     }
 
+    /**
+     * Deletes the given deposit from the database.
+     *
+     * @param Deposit $deposit
+     *
+     * @return int Negative number on success, current DBID on failure
+     */
     public function deleteDeposit($deposit)
     {
-        if ($deposit->getDBID() < 0) {
-            return false;
+        $depositID = $deposit->getDBID();
+
+        if ($depositID > -1) {
+            $stmt = $this->mysql_con->prepare($this->deleteDepositSQL);
+
+            if ($stmt !== false) {
+                $stmt->bind_param('i', $depositID);
+            }
+
+            if ($stmt->execute() === true) {
+                $depositID = -1;
+            }
+
+            $stmt->close();
         }
 
-        $sqlStmt = $this->mysql_con->prepare('DELETE FROM Deposit WHERE ID=?');
+        return $depositID;
+    }
 
-        if (!$sqlStmt) {
-            return false;
+    /**
+     * Deletes the given planet from the database.
+     *
+     * @param Planet $planet
+     *
+     * @return int Negative number on success, current DBID on failure
+     */
+    public function deletePlanet($planet)
+    {
+        $planetID = $planet->getDBID();
+
+        if ($planetID > -1) {
+            $stmt = $this->mysql_con->prepare($this->deletePlanetSQL);
+
+            if ($stmt !== false) {
+                $stmt->bind_param('i', $planetID);
+            }
+
+            if ($stmt->execute() === true) {
+                $planetID = -1;
+            }
+
+            $stmt->close();
         }
 
-        $depositIDBindable = $deposit->getDBID();
-        if (!$sqlStmt->bind_param('i', $depositIDBindable)) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        if (!$sqlStmt->execute()) {
-            $sqlStmt->close();
-
-            return false;
-        }
-
-        $sqlStmt->close();
-
-        return new Deposit($deposit->getSize(), $deposit->getLocationX(), $deposit->getLocationY(), $deposit->getPlanet(), $deposit->getType(), -1);
+        return $planetID;
     }
 }

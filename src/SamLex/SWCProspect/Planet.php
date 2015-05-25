@@ -119,4 +119,49 @@ class Planet
     {
         return $this->planetType;
     }
+
+    /**
+     * Returns the number of deposits on this planet.
+     *
+     * @return int
+     */
+    public function getNumDeposits()
+    {
+        return $this->db->getNumDeposits($this->dbID);
+    }
+
+    /**
+     * Returns an array of all the deposits on this planet.
+     *
+     * @return Deposit[]
+     */
+    public function getDeposits()
+    {
+        return $this->db->getDeposits($this->dbID);
+    }
+
+    /**
+     * Returns an array of all planets in the given DI.
+     *
+     * @param DatabaseInteractor $db The database to get planets from.
+     *
+     * @return Planet[]
+     */
+    public static function getPlanets($db)
+    {
+        return $db->getPlanets();
+    }
+
+    /**
+     * Returns the planet with the given id.
+     *
+     * @param DatabaseInteractor $db       The database to get planet from.
+     * @param int                $planetID The planet id.
+     *
+     * @return Planet
+     */
+    public static function getPlanet($db, $planetID)
+    {
+        return $db->getPlanet($planetID);
+    }
 }

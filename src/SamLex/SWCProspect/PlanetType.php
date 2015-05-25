@@ -3,6 +3,8 @@
 /** Part of SWCProspect, contains PlanetType class. */
 namespace SamLex\SWCProspect;
 
+use SamLex\SWCProspect\Database\DatabaseInteractor;
+
 /** Data class that holds data on a planet type. */
 class PlanetType
 {
@@ -69,5 +71,30 @@ class PlanetType
     public function getHTMLColour()
     {
         return $this->htmlColour;
+    }
+
+    /**
+     * Returns an array of all planet types.
+     *
+     * @param DatabaseInteractor $db The database to get types from.
+     *
+     * @return PlanetType[]
+     */
+    public static function getTypes($db)
+    {
+        return $db->getPlanetTypes();
+    }
+
+    /**
+     * Returns the type with the given id.
+     *
+     * @param DatabaseInteractor $db     The database to get type from.
+     * @param int                $typeID
+     *
+     * @return PlanetType
+     */
+    public static function getType($db, $typeID)
+    {
+        return $db->getPlanetType($typeID);
     }
 }

@@ -65,7 +65,7 @@ class MainPage extends Page
      */
     public function __construct($db)
     {
-        $this->db = db;
+        $this->db = $db;
         $this->setJQPageID('swcprospect-main-page');
         $this->setTitle('Welcome to SWCProspect');
     }
