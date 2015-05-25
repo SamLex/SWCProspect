@@ -48,7 +48,7 @@ class MySQLDatabaseInteractor implements DatabaseInteractor
     private $savePlanetNewSQL = 'INSERT INTO Planet (Name, Size, PlanetTypeID) VALUES (?,?,?)';
 
     /** SQL statement used to save an existing planet. */
-    private $savePlanetExisitingSQL = 'UPDATE Planet SET Name=?, Size=?, PlanetTypeID=? WHERE ID=?';
+    private $savePlanetExistingSQL = 'UPDATE Planet SET Name=?, Size=?, PlanetTypeID=? WHERE ID=?';
 
     /** SQL statement used to delete an existing deposit. */
     private $deleteDepositSQL = 'DELETE FROM Deposit WHERE ID=?';
