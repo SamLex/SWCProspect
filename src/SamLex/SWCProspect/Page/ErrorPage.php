@@ -18,5 +18,6 @@ class ErrorPage extends Page
         $this->setJQPageID('swcprospect-error-page');
         $this->setTitle('Error!');
         $this->addToJQContent('<p><b>An error occured, probably with the database. Please try again later.</b></p>');
+        $this->addToJQHeaderBeforeTitle($this->backButtonTemplate);
     }
 }
