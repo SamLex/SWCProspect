@@ -37,10 +37,18 @@ class EditDepositPage extends Page
     </form>
     ";
 
-    /** The DatabaseInteractor instance to use to get data. */
+    /**
+     * The DatabaseInteractor instance to use to get data.
+     *
+     * @var DatabaseInteractor
+     */
     private $db = null;
 
-    /** The deposit id of the deposit getting edited. */
+    /**
+     * The deposit id of the deposit getting edited.
+     *
+     * @var int
+     */
     private $depositID = -1;
 
     /**

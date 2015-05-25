@@ -30,7 +30,11 @@ class AddPlanetPage extends Page
     </form>
     ";
 
-    /** The DatabaseInteractor instance to use to get data. */
+    /**
+     * The DatabaseInteractor instance to use to get data.
+     *
+     * @var DatabaseInteractor
+     */
     private $db = null;
 
     /**

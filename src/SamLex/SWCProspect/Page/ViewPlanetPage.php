@@ -150,10 +150,18 @@ class ViewPlanetPage extends Page
     <a data-icon='gear' data-iconpos='notext' class='ui-btn-right' href='#%s%dMenuPopup' data-rel='popup'></a>
     ";
 
-    /** The DatabaseInteractor instance to use to get data. */
+    /**
+     * The DatabaseInteractor instance to use to get data.
+     *
+     * @var DatabaseInteractor
+     */
     private $db = null;
 
-    /** The planet id of the planet being viewed. */
+    /**
+     * The planet id of the planet being viewed.
+     *
+     * @var int
+     */
     private $planetID = -1;
 
     /**

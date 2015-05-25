@@ -32,10 +32,18 @@ class EditPlanetPage extends Page
     </form>
     ";
 
-    /** The DatabaseInteractor instance to use to get data. */
+    /**
+     * The DatabaseInteractor instance to use to get data.
+     *
+     * @var DatabaseInteractor
+     */
     private $db = null;
 
-    /** The planet id of the planet being edited. */
+    /**
+     * The planet id of the planet being edited.
+     *
+     * @var int
+     */
     private $planetID = -1;
 
     /**

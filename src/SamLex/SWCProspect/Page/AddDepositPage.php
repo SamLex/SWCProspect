@@ -36,10 +36,18 @@ class AddDepositPage extends Page
     </form>
     ";
 
-    /** The DatabaseInteractor instance to use to get data. */
+    /**
+     * The DatabaseInteractor instance to use to get data.
+     *
+     * @var DatabaseInteractor
+     */
     private $db = null;
 
-    /** The planet id of the planet the new deposit is on. */
+    /**
+     * The planet id of the planet the new deposit is on.
+     *
+     * @var int
+     */
     private $planetID = -1;
 
     /**
