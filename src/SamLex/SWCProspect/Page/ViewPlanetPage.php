@@ -185,9 +185,9 @@ class ViewPlanetPage extends Page
     public function init()
     {
         $planet = Planet::getPlanet($this->db, $this->planetID);
-        $deposits = $planet->getDeposits();
 
         if (!is_null($planet)) {
+            $deposits = $planet->getDeposits();
             $spacelessName = str_replace(' ', '', $planet->getName());
 
             $this->setJQPageID(sprintf('swcprospect-view-planet-page-%s%d', $spacelessName, $planet->getDBID()));
