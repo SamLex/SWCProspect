@@ -53,7 +53,7 @@ class AddPlanetPage extends Page
      */
     public function init()
     {
-        $planetTypes = PlanetType::getTypes();
+        $planetTypes = PlanetType::getTypes($this->db);
 
         if (count($planetTypes) !== 0) {
             $this->addToJQContent($this->addPlanetForm($planetTypes));

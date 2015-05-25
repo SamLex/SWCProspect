@@ -73,7 +73,7 @@ class MainPage extends Page
      */
     public function init()
     {
-        $planets = Planet::getPlanets();
+        $planets = Planet::getPlanets($this->db);
 
         foreach ($planets as $planet) {
             $this->addToJQContent($this->planetTile($planet));

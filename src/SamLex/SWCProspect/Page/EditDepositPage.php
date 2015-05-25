@@ -1,12 +1,20 @@
 <?php
 
+/** Part of SWCProspect, contains EditDepositPage class. */
 namespace SamLex\SWCProspect\Page;
 
-/*
-    The edit deposit page
-*/
+use SamLex\SWCProspect\Database\DatabaseInteractor;
+use SamLex\SWCProspect\DepositType;
+use SamLex\SWCProspect\Deposit;
+
+/**
+ * The edit deposit page.
+ *
+ * Shows a form with all nessessary fields to edit an existing deposit.
+ */
 class EditDepositPage extends Page
 {
+    /** The template for the form. */
     private $editDepositFormTemplate = "
     <form method='post' action='worker/editdepositworker.php' data-ajax='false'>
         <input type='hidden' name='planetid' value='%%PLANET_ID%%'>
@@ -29,36 +37,54 @@ class EditDepositPage extends Page
     </form>
     ";
 
+    /** The DatabaseInteractor instance to use to get data. */
+    private $db = null;
+
+    /** The deposit id of the deposit getting edited. */
+    private $depositID = -1;
+
+    /**
+     * Constructs a new EditDepositPage instance.
+     *
+     * @param DatabaseInteractor $db        The DatabaseInteractor instance to use to get data.
+     * @param int                $depositID The deposit id of the deposit getting edited.
+     */
     public function __construct($db, $depositID)
     {
-        $dbError = !$db->isAvailable();
-
-        if ($dbError === false) {
-            $depositTypes = $db->getDepositTypes();
-
-            if ($depositTypes === false) {
-                $dbError = true;
-            } else {
-                $deposit = $db->getDeposit($depositID);
-
-                if ($deposit === false) {
-                    $dbError = true;
-                }
-            }
-        }
-
+        $this->db = $db;
+        $this->depositID = $depositID;
         $this->setTitle('Edit Deposit');
-        $this->addToJQHeaderBeforeTitle("<a data-icon='back' data-iconpos='notext' class='ui-btn-left' data-rel='back'></a>");
+        $this->addToJQHeaderBeforeTitle($this->backButtonTemplate);
+        $this->setJQPageID(sprintf('swcprospect-add-deposit-page-%d', $depositID));
+    }
 
-        if ($dbError === true) {
-            $this->setJQPageID('swcprospect-edit-deposit-page-error');
-            $this->addToJQContent('<p><b>Database error. Unable to continue.</b></p>');
-        } else {
-            $this->setJQPageID(sprintf('swcprospect-add-deposit-page-%d', $deposit->getDBID()));
+    /**
+     * Initializes the page.
+     *
+     * @return bool True if the page initialized successfully.
+     */
+    public function init()
+    {
+        $depositTypes = DepositType::getTypes($this->db);
+        $deposit = Deposit::getDeposit($this->db, $this->depositID);
+
+        if (!is_null($deposit) && (count($depositTypes) !== 0)) {
             $this->addToJQContent($this->editDepositForm($depositTypes, $deposit));
+
+            return true;
+        } else {
+            return false;
         }
     }
 
+    /**
+     * Generates the form.
+     *
+     * @param DepositType[] $depositTypes An array of all known deposit types.
+     * @param Deposit       $deposit      The deposit.
+     *
+     * @return string The generated form.
+     */
     private function editDepositForm($depositTypes, $deposit)
     {
         $form = $this->editDepositFormTemplate;
@@ -73,6 +99,14 @@ class EditDepositPage extends Page
         return $form;
     }
 
+    /**
+     * Generates the type options for a select element in the form.
+     *
+     * @param DepositType[] $types    An array of all known deposit types.
+     * @param DepositType   $existing The current deposit type.
+     *
+     * @return string The generated options.
+     */
     private function genTypeOptions($types, $existing)
     {
         $options = '';
@@ -88,6 +122,14 @@ class EditDepositPage extends Page
         return $options;
     }
 
+    /**
+     * Generates the location options for a select element in the form.
+     *
+     * @param int $size     The max location option.
+     * @param int $existing The current location.
+     *
+     * @return string The generated options.
+     */
     private function genLocOptions($size, $existing)
     {
         $options = '';

@@ -64,8 +64,8 @@ class AddDepositPage extends Page
      */
     public function init()
     {
-        $depositTypes = DepositType::getTypes();
-        $planet = Planet::getPlanet();
+        $depositTypes = DepositType::getTypes($this->db);
+        $planet = Planet::getPlanet($this->db, $this->planetID);
 
         if (!is_null($planet) && (count($depositTypes) !== 0)) {
             $this->addToJQContent($this->addDepositForm($depositTypes, $planet));
