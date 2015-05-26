@@ -1,6 +1,6 @@
 # SWCProspect
 
-A small website designed for use with the game SWCombine, for managing planetary prospecting results. Designed for submission to the " How to get noticed as a coder for SWC" [forum thread] (http://www.swcombine.com/forum/thread.php?thread=36174).
+A small website designed for use with the game SWCombine, for managing planetary prospecting results. Designed for submission to the "How to get noticed as a coder for SWC" [forum thread] (http://www.swcombine.com/forum/thread.php?thread=36174).
 
 ### Usage
 
